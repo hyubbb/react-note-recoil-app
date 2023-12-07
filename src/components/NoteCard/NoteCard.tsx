@@ -9,10 +9,15 @@ import { NotesIconBox } from "../../styles/styles";
 import { BsFillPinFill } from "react-icons/bs";
 import { Note } from "../../types/note";
 import getRelevantBtns from "../../utils/getRelevantBtns";
-import { useAppDispatch } from "../../hooks/redux";
-import { readNote, setPinnedNotes } from "../../store/notesList/notesListSlice";
+// import { useAppDispatch } from "../../hooks/redux";
+// import { readNote, setPinnedNotes } from "../../store/notesList/notesListSlice";
 import parse from "html-react-parser";
-import { ReadNoteModal } from "..";
+import ReadNoteModal from "../Modal/ReadNoteModal/ReadNoteModal";
+import {
+  readSelector,
+  setPinnedSelector,
+} from "../../recoil/atoms/notesListState";
+import { useSetRecoilState } from "recoil";
 
 interface NoteCardProps {
   note: Note;
@@ -23,8 +28,8 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
   const { title, content, tags, color, priority, date, isPinned, isRead, id } =
     note;
 
-  const dispatch = useAppDispatch();
-
+  const setPinned = useSetRecoilState(setPinnedSelector);
+  const setRead = useSetRecoilState(readSelector);
   const func = () => {
     const chkImg = content.includes("img src=");
     if (chkImg) {
@@ -37,6 +42,7 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
   return (
     <>
       {isRead && <ReadNoteModal note={note} type={type} />}
+
       <Card style={{ background: color }}>
         <TopBox>
           <div className='noteCard__title'>
@@ -47,7 +53,7 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
             {type !== "archive" && type !== "trash" && (
               <NotesIconBox
                 className='noteCard__pin'
-                onClick={() => dispatch(setPinnedNotes({ id }))}
+                onClick={() => setPinned(note)}
               >
                 <BsFillPinFill style={{ color: isPinned ? "red" : "" }} />
               </NotesIconBox>
@@ -55,7 +61,7 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
             <div className='noteCard__pic'></div>
           </div>
         </TopBox>
-        <ContentBox onClick={() => dispatch(readNote({ type, id }))}>
+        <ContentBox onClick={() => setRead({ type, id })}>
           {parse(func())}
         </ContentBox>
         <TagsBox>
@@ -65,7 +71,7 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
         </TagsBox>
         <FooterBox>
           <div className='noteCard__date'>{date}</div>
-          <div>{getRelevantBtns(type, note, dispatch)}</div>
+          <div>{getRelevantBtns(type, note)}</div>
         </FooterBox>
       </Card>
     </>

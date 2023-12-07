@@ -1,10 +1,10 @@
 import { Box } from "./ReadNoteModal.styles";
-import { useAppDispatch } from "../../../hooks/redux";
 import { DeleteBox, FixedContainer } from "../Modal.styles";
-import { readNote } from "../../../store/notesList/notesListSlice";
 import { FaTimes } from "react-icons/fa";
 import { Note } from "../../../types/note";
 import parse from "html-react-parser";
+import { useSetRecoilState } from "recoil";
+import { readSelector } from "../../../recoil/atoms/notesListState";
 
 interface ReadNoteModalProps {
   note: Note;
@@ -12,14 +12,13 @@ interface ReadNoteModalProps {
 }
 
 const ReadNoteModal = ({ note, type }: ReadNoteModalProps) => {
-  const dispatch = useAppDispatch();
-
+  const setRead = useSetRecoilState(readSelector);
   return (
     <FixedContainer>
       <Box style={{ backgroundColor: note.color }}>
         <DeleteBox
           className='readNote__close-btn'
-          onClick={() => dispatch(readNote({ type, id: note.id }))}
+          onClick={() => setRead({ type, id: note.id })}
         >
           <FaTimes />
         </DeleteBox>

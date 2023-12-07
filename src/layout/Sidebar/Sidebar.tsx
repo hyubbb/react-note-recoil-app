@@ -1,14 +1,15 @@
-import React from "react";
-import { useDispatch } from "react-redux";
+import { useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAppSelector } from "../../hooks/redux";
 import { Container, ItemsBox, MainBox, StyledLogo } from "./Sidebar.styles";
-import { toggleMenu } from "../../store/menu/menuSlice";
 import { FaArchive, FaLightbulb, FaTag, FaTrash } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import getStandardName from "../../utils/getStandardName";
-import { toggleTagsModal } from "../../store/modal/modalSlice";
 import { v4 } from "uuid";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { menuState } from "../../recoil/atoms/menuListState";
+import useOnClickOutside from "../../hooks/useOnClickOutside";
+import { tagsListState } from "../../recoil/atoms/tagsListState";
+import { toggleTagsModalSelector } from "../../recoil/atoms/modalState";
 
 const items = [
   { icon: <FaArchive />, title: "Archive", id: v4() },
@@ -16,21 +17,25 @@ const items = [
 ];
 
 const Sidebar = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const { isOpen } = useAppSelector((state) => state.menu);
-  const { tagsList } = useAppSelector((state) => state.tags);
+  const { tagsList } = useRecoilValue(tagsListState);
+  const [isOpen, setIsOpen] = useRecoilState(menuState);
+  const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
+
+  const ref = useRef<HTMLDivElement>(null);
+  useOnClickOutside({ ref, handler: () => setIsOpen(false) });
 
   if (pathname === "/404") return null;
 
   return (
-    <Container $openMenu={isOpen ? "open" : ""}>
-      <MainBox $openMenu={isOpen ? "open" : ""}>
+    <Container $openMenu={isOpen ? "open" : ""} className='menu__background'>
+      <MainBox $openMenu={isOpen ? "open" : ""} ref={ref}>
         <StyledLogo>
           <h1>Keep</h1>
         </StyledLogo>
         <ItemsBox>
-          <li onClick={() => dispatch(toggleMenu(false))}>
+          <li onClick={() => setIsOpen(false)}>
             <NavLink
               to={"/"}
               state={`notes`}
@@ -45,7 +50,7 @@ const Sidebar = () => {
             </NavLink>
           </li>
           {tagsList?.map(({ tag, id }) => (
-            <li key={id} onClick={() => dispatch(toggleMenu(false))}>
+            <li key={id} onClick={() => setIsOpen(false)}>
               <NavLink
                 to={`/tag/${tag}`}
                 state={`${tag}`}
@@ -63,9 +68,7 @@ const Sidebar = () => {
           {/* edit tag item */}
           <li
             className='sidebar__edit-item'
-            onClick={() =>
-              dispatch(toggleTagsModal({ type: "edit", view: true }))
-            }
+            onClick={() => setTagsModalState({ state: "edit", value: true })}
           >
             <span>
               <MdEdit />
@@ -74,7 +77,7 @@ const Sidebar = () => {
           </li>
           {/* other Items */}
           {items.map(({ icon, title, id }) => (
-            <li key={id} onClick={() => dispatch(toggleMenu(false))}>
+            <li key={id} onClick={() => setIsOpen(false)}>
               <NavLink
                 to={`/${title.toLocaleLowerCase()}`}
                 state={`${title}`}

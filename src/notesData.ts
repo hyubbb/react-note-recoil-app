@@ -1,10 +1,14 @@
 import { v4 } from "uuid";
+import { Note } from "./types/note";
 
-const notes = [
+const notes: Note[] = [
   {
     title: "Note 1 title",
     content: "Note 1 content",
-    tags: [{ tag: "coding", id: v4() }],
+    tags: [
+      { tag: "coding", id: v4() },
+      { tag: "exercise", id: v4() },
+    ],
     color: "#cce0ff",
     priority: "high",
     isPinned: true,

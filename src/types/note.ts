@@ -12,4 +12,20 @@ export interface Note {
   createdTime: number;
   editedTime: null | number;
   id: string;
+  type: string;
 }
+
+export const singleNote: Note = {
+  title: "",
+  content: "",
+  tags: [{ tag: "", id: "" }],
+  color: "",
+  priority: "",
+  isPinned: false,
+  isRead: false,
+  date: "",
+  createdTime: 0,
+  editedTime: null,
+  id: "",
+  type: "",
+};

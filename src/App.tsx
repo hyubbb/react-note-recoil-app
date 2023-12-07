@@ -9,13 +9,14 @@ import {
 } from "./pages";
 import { Navbar, Sidebar } from "./layout";
 import { CreateNoteModal, TagsModal } from "./components";
-import { useAppSelector } from "./hooks/redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRecoilValue } from "recoil";
+import { toggleTagsModalState } from "./recoil/atoms/modalState";
 
 function App() {
-  const { viewEditTagsModal } = useAppSelector((state) => state.modal);
-  const { viewCreateNoteModal } = useAppSelector((state) => state.modal);
+  const { viewEditTagsModal, viewCreateNoteModal } =
+    useRecoilValue(toggleTagsModalState);
 
   return (
     <>
@@ -28,6 +29,7 @@ function App() {
           pauseOnHover
           autoClose={1500}
         />
+
         <BrowserRouter>
           <Sidebar />
           <div className='app__container'>

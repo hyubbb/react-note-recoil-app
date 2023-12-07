@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Container, TopBox } from "./FiltersModal.styles";
-import { useAppDispatch } from "../../../hooks/redux";
 import { DeleteBox, FixedContainer } from "../Modal.styles";
 import { FaTimes } from "react-icons/fa";
-import { toggleFiltersModal } from "../../../store/modal/modalSlice";
+import { useSetRecoilState } from "recoil";
+import { toggleTagsModalSelector } from "../../../recoil/atoms/modalState";
 interface FiltersModalProps {
   handleFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleClear: () => void;
@@ -15,14 +15,15 @@ const FiltersModal = ({
   handleClear,
   filter,
 }: FiltersModalProps) => {
-  const dispatch = useAppDispatch();
-
+  const setToggleFiltersModal = useSetRecoilState(toggleTagsModalSelector);
   return (
     <>
       <FixedContainer>
         <Container>
           <DeleteBox
-            onClick={() => dispatch(toggleFiltersModal(false))}
+            onClick={() => {
+              setToggleFiltersModal({ state: "filter", value: false });
+            }}
             className='filters__close'
           >
             <FaTimes />

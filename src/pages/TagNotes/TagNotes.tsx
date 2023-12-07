@@ -4,16 +4,17 @@ import { Note } from "../../types/note";
 import { ButtonOutline, Container, EmptyMsgBox } from "../../styles/styles";
 import getAllNotes from "../../utils/getAllNotes";
 import { Box, TopBox } from "../AllNotes/AllNotes.styles";
-import { FiltersModal } from "../../components";
+// import { FiltersModal } from "../../components";
 import { useState } from "react";
-import { toggleFiltersModal } from "../../store/modal/modalSlice";
+import { useRecoilValue } from "recoil";
+import { notesListState } from "../../recoil/atoms/notesListState";
+// import { toggleFiltersModal } from "../../store/modal/modalSlice";
 
 const TagNotes = () => {
-  const { mainNotes } = useAppSelector((state) => state.notesList);
-  const { viewFiltersModal } = useAppSelector((state) => state.modal);
+  const { mainNotes } = useRecoilValue(notesListState);
+  // const { viewFiltersModal } = useAppSelector((state) => state.modal);
   const { state: type } = useLocation();
   const [filter, setFilter] = useState("");
-  const dispatch = useAppDispatch();
   const notes: Note[] = [];
 
   const filterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,13 +35,13 @@ const TagNotes = () => {
 
   return (
     <>
-      {viewFiltersModal && (
+      {/* {viewFiltersModal && (
         <FiltersModal
           handleFilter={filterHandler}
           handleClear={clearHandler}
           filter={filter}
         />
-      )}
+      )} */}
 
       <Container>
         {notes.length === 0 ? (
@@ -50,7 +51,7 @@ const TagNotes = () => {
             <TopBox>
               <div className='notes__filter-btn'>
                 <ButtonOutline
-                  onClick={() => dispatch(toggleFiltersModal(true))}
+                  // onClick={() => dispatch(toggleFiltersModal(true))}
                   className='nav__btn'
                 >
                   <span>정렬</span>

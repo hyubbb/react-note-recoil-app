@@ -1,5 +1,4 @@
-import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import React, { useState } from "react";
+import { useState } from "react";
 import { DeleteBox, FixedContainer } from "../Modal.styles";
 import {
   AddedTagsBox,
@@ -8,36 +7,41 @@ import {
   StyledInput,
   TopBox,
 } from "./CreateNoteModal.styles";
-import {
-  toggleCreateNoteModal,
-  toggleTagsModal,
-} from "../../../store/modal/modalSlice";
 import { ButtonFill, ButtonOutline } from "../../../styles/styles";
 import { FaTimes } from "react-icons/fa";
-import {
-  setEditNote,
-  setMainNotes,
-} from "../../../store/notesList/notesListSlice";
+
 import { TagsModal } from "../..";
 import { v4 } from "uuid";
-import TextEditor from "../../TextEditor/textEditor";
-import { toast } from "react-toastify";
+
 import dayjs from "dayjs";
 import { Note } from "../../../types/note";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  modalState,
+  toggleTagsModalSelector,
+} from "../../../recoil/atoms/modalState";
+import {
+  notesListState,
+  setMainNotesSelector,
+} from "../../../recoil/atoms/notesListState";
+import { toast } from "react-toastify";
+import TextEditor from "../../TextEditor/TextEditor";
 
 const CreateNoteModal = () => {
-  const dispatch = useAppDispatch();
-  const { editNote } = useAppSelector((state) => state.notesList);
-  const { viewAddTagsModal } = useAppSelector((state) => state.modal);
+  const { editNote } = useRecoilValue(notesListState);
+  const { viewAddTagsModal } = useRecoilValue(modalState);
   const [noteTitle, setNoteTitle] = useState(editNote?.title || "");
   const [value, setValue] = useState(editNote?.content || "");
   const [addedTags, setAddedTags] = useState(editNote?.tags || []);
   const [noteColor, setNoteColor] = useState(editNote?.color || "");
   const [priority, setPriority] = useState(editNote?.priority || "low");
 
+  const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
+  const setCreateNoteState = useSetRecoilState(setMainNotesSelector);
   const closeCreateNoteModal = () => {
-    dispatch(toggleCreateNoteModal(false));
-    dispatch(setEditNote(null));
+    setTagsModalState({ state: "create", value: false });
+    // dispatch(toggleCreateNoteModal(false));
+    // dispatch(setEditNote(null));
   };
 
   const tagsHandler = (tag: string, type: string) => {
@@ -61,7 +65,8 @@ const CreateNoteModal = () => {
 
     const date = dayjs().format("YY/MM/DD h:mm A");
 
-    let note: Partial<Note> = {
+    let note: Note = {
+      ...editNote!,
       title: noteTitle,
       content: value,
       tags: addedTags,
@@ -84,9 +89,13 @@ const CreateNoteModal = () => {
         id: v4(),
       };
     }
-    dispatch(setMainNotes(note));
-    dispatch(toggleCreateNoteModal(false));
-    dispatch(setEditNote(null));
+    // setCreateNoteState(note);
+    setCreateNoteState(note);
+    // setCreateNoteState((currentNotes) => {
+    //   return { ...currentNotes, mainNotes: [...currentNotes.mainNotes, note] };
+    // });
+    setTagsModalState({ state: "create", value: false });
+    // dispatch(setEditNote(null));
   };
 
   return (
@@ -105,7 +114,9 @@ const CreateNoteModal = () => {
             <DeleteBox
               className='createNote__close-btn'
               onClick={closeCreateNoteModal}
-            ></DeleteBox>
+            >
+              <FaTimes />
+            </DeleteBox>
           </TopBox>
           <StyledInput
             type='text'
@@ -133,9 +144,7 @@ const CreateNoteModal = () => {
 
           <OptionsBox>
             <ButtonOutline
-              onClick={() =>
-                dispatch(toggleTagsModal({ type: "add", view: true }))
-              }
+              onClick={() => setTagsModalState({ state: "add", value: true })}
             >
               Add Tag
             </ButtonOutline>

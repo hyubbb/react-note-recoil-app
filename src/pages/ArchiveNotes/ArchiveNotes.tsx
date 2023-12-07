@@ -1,10 +1,11 @@
-import React from "react";
-import { useAppSelector } from "../../hooks/redux";
+import { notesListState } from "../../recoil/atoms/notesListState";
 import { Container, EmptyMsgBox } from "../../styles/styles";
+import { useRecoilValue } from "recoil";
 import { MainWrapper } from "../../components";
-
+import { Box } from "../AllNotes/AllNotes.styles";
+import getAllNotes from "../../utils/getAllNotes";
 const ArchiveNotes = () => {
-  const { archiveNotes } = useAppSelector((state) => state.notesList);
+  const { archiveNotes } = useRecoilValue(notesListState);
   return (
     <>
       <Container>

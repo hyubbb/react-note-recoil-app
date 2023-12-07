@@ -1,22 +1,28 @@
 import { FaArchive, FaEdit, FaTrash, FaTrashRestore } from "react-icons/fa";
 import { RiInboxUnarchiveFill } from "react-icons/ri";
 import { NotesIconBox } from "../styles/styles";
-import { Dispatch } from "react";
 import { Note } from "../types/note";
-import { toggleCreateNoteModal } from "../store/modal/modalSlice";
+import { useSetRecoilState } from "recoil";
 import {
-  deleteNote,
-  restoreNote,
-  setArchiveNotes,
-  setEditNote,
-  setTrashNotes,
-  unArchiveNote,
-} from "../store/notesList/notesListSlice";
+  removeNoteSelector,
+  setArchiveSelector,
+  setEditNoteSelector,
+  setTrashSelector,
+} from "../recoil/atoms/notesListState";
+import { toggleTagsModalSelector } from "../recoil/atoms/modalState";
 
-const getRelevantBtns = (type: string, note: Note, dispatch: Dispatch) => {
+const GetRelevantBtns = (type: string, note: Note) => {
+  const toggleNoteModal = useSetRecoilState(toggleTagsModalSelector);
+  const setArchiveNotes = useSetRecoilState(setArchiveSelector);
+  const setTrashNotes = useSetRecoilState(setTrashSelector);
+  const setEditNote = useSetRecoilState(setEditNoteSelector);
+  const deleteNote = useSetRecoilState(removeNoteSelector);
+
   const clickHandler = () => {
-    dispatch(toggleCreateNoteModal(true));
-    dispatch(setEditNote(note));
+    toggleNoteModal({ state: "create", value: true });
+    setEditNote(note);
+
+    // dispatch(toggleCreateNoteModal(true));
   };
 
   if (type === "archive") {
@@ -24,15 +30,13 @@ const getRelevantBtns = (type: string, note: Note, dispatch: Dispatch) => {
       <>
         {/* data-info is used for tooltip */}
         <NotesIconBox
-          onClick={() => dispatch(unArchiveNote(note))}
+          // onClick={() => dispatch(unArchiveNote(note))}
+          onClick={() => setArchiveNotes(note)}
           data-info='Unarchive'
         >
           <RiInboxUnarchiveFill style={{ fontsize: "1rem" }} />
         </NotesIconBox>
-        <NotesIconBox
-          onClick={() => dispatch(setTrashNotes(note))}
-          data-info='Delete'
-        ></NotesIconBox>
+        <NotesIconBox data-info='Delete'></NotesIconBox>
       </>
     );
   } else if (type === "trash") {
@@ -40,16 +44,10 @@ const getRelevantBtns = (type: string, note: Note, dispatch: Dispatch) => {
       <>
         {" "}
         {/* data-info is used for tooltip */}
-        <NotesIconBox
-          onClick={() => dispatch(restoreNote(note))}
-          data-info='Restore'
-        >
+        <NotesIconBox onClick={() => setTrashNotes(note)} data-info='Restore'>
           <FaTrashRestore style={{ fontsize: "1rem" }} />
         </NotesIconBox>
-        <NotesIconBox
-          onClick={() => dispatch(deleteNote(note))}
-          data-info='Delete'
-        >
+        <NotesIconBox onClick={() => deleteNote(note)} data-info='Delete'>
           <FaTrash />
         </NotesIconBox>
       </>
@@ -61,16 +59,10 @@ const getRelevantBtns = (type: string, note: Note, dispatch: Dispatch) => {
         <NotesIconBox onClick={clickHandler} data-info='edit'>
           <FaEdit style={{ fontsize: "1rem" }} />
         </NotesIconBox>
-        <NotesIconBox
-          onClick={() => dispatch(setArchiveNotes(note))}
-          data-info='Archive'
-        >
+        <NotesIconBox onClick={() => setArchiveNotes(note)} data-info='Archive'>
           <FaArchive />
         </NotesIconBox>
-        <NotesIconBox
-          onClick={() => dispatch(setTrashNotes(note))}
-          data-info='Delete'
-        >
+        <NotesIconBox onClick={() => setTrashNotes(note)} data-info='Delete'>
           <FaTrash />
         </NotesIconBox>
       </>
@@ -78,4 +70,4 @@ const getRelevantBtns = (type: string, note: Note, dispatch: Dispatch) => {
   }
 };
 
-export default getRelevantBtns;
+export default GetRelevantBtns;
