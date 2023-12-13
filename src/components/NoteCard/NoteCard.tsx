@@ -8,9 +8,6 @@ import {
 import { NotesIconBox } from "../../styles/styles";
 import { BsFillPinFill } from "react-icons/bs";
 import { Note } from "../../types/note";
-import getRelevantBtns from "../../utils/getRelevantBtns";
-// import { useAppDispatch } from "../../hooks/redux";
-// import { readNote, setPinnedNotes } from "../../store/notesList/notesListSlice";
 import parse from "html-react-parser";
 import ReadNoteModal from "../Modal/ReadNoteModal/ReadNoteModal";
 import {
@@ -38,12 +35,16 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
       return content.length > 40 ? content.slice(0, 40) + "..." : content;
     }
   };
+  const funcPinned = (e: Event) => {
+    e.stopPropagation();
+    setPinned(note);
+  };
 
   return (
     <>
       {isRead && <ReadNoteModal note={note} type={type} />}
 
-      <Card style={{ background: color }}>
+      <Card style={{ background: color }} onClick={() => setRead({ type, id })}>
         <TopBox>
           <div className='noteCard__title'>
             {title.length > 10 ? title.slice(0, 10) + "..." : title}
@@ -53,17 +54,15 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
             {type !== "archive" && type !== "trash" && (
               <NotesIconBox
                 className='noteCard__pin'
-                onClick={() => setPinned(note)}
+                onClick={(e) => funcPinned(e)}
               >
                 <BsFillPinFill style={{ color: isPinned ? "red" : "" }} />
               </NotesIconBox>
             )}
-            <div className='noteCard__pic'></div>
+            {/* <div className='noteCard__pic'></div> */}
           </div>
         </TopBox>
-        <ContentBox onClick={() => setRead({ type, id })}>
-          {parse(func())}
-        </ContentBox>
+        <ContentBox>{parse(func())}</ContentBox>
         <TagsBox>
           {tags.map(({ tag, id }) => (
             <span key={id}>{tag}</span>
@@ -71,7 +70,6 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
         </TagsBox>
         <FooterBox>
           <div className='noteCard__date'>{date}</div>
-          <div>{getRelevantBtns(type, note)}</div>
         </FooterBox>
       </Card>
     </>

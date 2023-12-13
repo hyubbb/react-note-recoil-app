@@ -5,6 +5,15 @@ const isDevelopment = process.env.NODE_ENV === "development";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`,
+      },
+    },
+  },
   css: {
     modules: {
       // 개발 환경에서는 더 명확한 클래스명을 사용하고,

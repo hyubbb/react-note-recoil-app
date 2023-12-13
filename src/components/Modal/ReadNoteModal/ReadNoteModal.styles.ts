@@ -7,7 +7,7 @@ export const Box = styled.div`
   color: black;
   border-radius: 10px;
   padding: 20px 20px 25px;
-  overflow-y: auto;
+  overflow: hidden;
 
   .readNote__close-btn {
     width: 100%;
@@ -27,5 +27,63 @@ export const Box = styled.div`
       width: 100%;
       border-radius: 10px;
     }
+  }
+`;
+
+export const TopBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+  margin-top: 20px;
+
+  .noteCard__title {
+    font-weight: 600;
+    font-size: 1.15rem;
+    cursor: pointer;
+  }
+
+  .noteCard__top-options {
+    white-space: nowrap;
+    margin-left: 8px;
+
+    .noteCard__priority {
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 20px;
+    }
+
+    .noteCard__pin {
+      svg {
+        font-size: 15px;
+      }
+    }
+  }
+`;
+
+export const TagsBox = styled.div`
+  height: 25px;
+  margin-bottom: 15px;
+  /* overflow: scroll; */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  span {
+    display: inline;
+    background-color: rgba(0, 0, 0, 0.07);
+    color: rgba(0, 0, 0, 0.7);
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 `;

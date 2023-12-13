@@ -12,6 +12,10 @@ export const FixedContainer = styled.div`
   justify-content: center;
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(3px);
+
+  &.low {
+    z-index: 4;
+  }
 `;
 
 export const DeleteBox = styled.div`

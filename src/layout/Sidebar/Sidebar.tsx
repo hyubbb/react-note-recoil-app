@@ -19,7 +19,7 @@ const items = [
 const Sidebar = () => {
   // const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const { tagsList } = useRecoilValue(tagsListState);
+
   const [isOpen, setIsOpen] = useRecoilState(menuState);
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
 
@@ -49,32 +49,7 @@ const Sidebar = () => {
               <span>{getStandardName("notes")}</span>
             </NavLink>
           </li>
-          {tagsList?.map(({ tag, id }) => (
-            <li key={id} onClick={() => setIsOpen(false)}>
-              <NavLink
-                to={`/tag/${tag}`}
-                state={`${tag}`}
-                className={({ isActive }) =>
-                  isActive ? "active-item" : "inactive-item"
-                }
-              >
-                <span>
-                  <FaTag />
-                </span>
-                <span>{getStandardName(`${tag}`)}</span>
-              </NavLink>
-            </li>
-          ))}
-          {/* edit tag item */}
-          <li
-            className='sidebar__edit-item'
-            onClick={() => setTagsModalState({ state: "edit", value: true })}
-          >
-            <span>
-              <MdEdit />
-            </span>
-            <span>Edit Notes</span>
-          </li>
+
           {/* other Items */}
           {items.map(({ icon, title, id }) => (
             <li key={id} onClick={() => setIsOpen(false)}>
@@ -90,6 +65,16 @@ const Sidebar = () => {
               </NavLink>
             </li>
           ))}
+
+          <li
+            className='sidebar__edit-item'
+            onClick={() => setTagsModalState({ state: "edit", value: true })}
+          >
+            <span>
+              <MdEdit />
+            </span>
+            <span>Edit Tags</span>
+          </li>
         </ItemsBox>
       </MainBox>
     </Container>

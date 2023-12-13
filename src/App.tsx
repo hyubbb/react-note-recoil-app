@@ -11,9 +11,11 @@ import { Navbar, Sidebar } from "./layout";
 import { CreateNoteModal, TagsModal } from "./components";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { RecoilEnv } from "recoil";
 import { useRecoilValue } from "recoil";
 import { toggleTagsModalState } from "./recoil/atoms/modalState";
 
+RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 function App() {
   const { viewEditTagsModal, viewCreateNoteModal } =
     useRecoilValue(toggleTagsModalState);

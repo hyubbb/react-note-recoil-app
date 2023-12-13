@@ -38,9 +38,6 @@ export const toggleTagsModalState = selector({
   get: ({ get }) => {
     return get(modalState);
   },
-  set: ({ set, get }, newValue) => {
-    ("");
-  },
 });
 
 export const toggleTagsModalSelector = selector({
@@ -53,10 +50,7 @@ export const toggleTagsModalSelector = selector({
     const { state, value } = newValue as ToggleTagsType;
 
     if (state === "add") {
-      // if (type === "add") {
       set(modalState, { ...currentModalState, viewAddTagsModal: value });
-      // } else if (type === "edit") {
-      // }
     }
     if (state === "edit") {
       set(modalState, { ...currentModalState, viewEditTagsModal: value });
@@ -69,9 +63,5 @@ export const toggleTagsModalSelector = selector({
     if (state === "filter") {
       set(modalState, { ...currentModalState, viewFiltersModal: value });
     }
-
-    // if (state === "addTags") {
-    //   set(modalState, { ...currentModalState, viewAddTagsModal: value });
-    // }
   },
 });

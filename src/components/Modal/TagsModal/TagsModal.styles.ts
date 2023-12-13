@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Box = styled.div`
   width: clamp(250px, 60%, 280px);
   max-height: 85vh;
-  overflow-y: auto;
+
   background-color: white;
   color: black;
   border-radius: 5px;

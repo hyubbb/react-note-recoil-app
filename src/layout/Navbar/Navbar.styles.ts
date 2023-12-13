@@ -41,3 +41,16 @@ export const Container = styled.div`
     margin-top: 7px;
   }
 `;
+
+export const TagList = styled.div`
+  display: flex;
+  padding: 20px 10px 0px;
+
+  li {
+    list-style: none;
+    border: 1px solid #424242;
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin: 0 10px;
+  }
+`;

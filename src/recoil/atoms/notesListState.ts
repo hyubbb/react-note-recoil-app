@@ -26,15 +26,21 @@ const initialState: NotesList = {
   editNote: null,
 };
 
+interface moveToNoteType {
+  type: string;
+  note: Note;
+}
 const readInitialState = {
   type: "",
   id: "",
 };
 
-const readStateAtom = atom({
-  key: "readStateAtom",
-  default: readInitialState,
-});
+const moveToNoteState: moveToNoteType = {
+  type: "",
+  note: {
+    ...singleNote,
+  },
+};
 
 export const notesListState = atom({
   key: "notesListState",
@@ -49,6 +55,22 @@ export const tagsAtom = atom({
 export const singleNoteAtom = atom({
   key: "noteCreateState",
   default: singleNote,
+});
+
+export const moveToNoteAtom = atom({
+  key: "moveToNoteAtom",
+  default: moveToNoteState,
+});
+const readStateAtom = atom({
+  key: "readStateAtom",
+  default: readInitialState,
+});
+
+export const setNotesSelector = selector({
+  key: "setNotesSelector",
+  get: ({ get }) => {
+    return get(notesListState);
+  },
 });
 
 export const setMainNotesSelector = selector({
@@ -96,6 +118,12 @@ export const setEditNoteSelector = selector({
   },
 });
 
+const checkArrayMap = (notes: Note[], newValue: Note, type: keyof Note) => {
+  return notes.map((note) => {
+    return note.id === newValue.id ? { ...note, [type]: !note[type] } : note;
+  });
+};
+
 export const setPinnedSelector = selector({
   key: "setPinnedSelector",
   get: ({ get }) => {
@@ -112,12 +140,6 @@ export const setPinnedSelector = selector({
     set(notesListState, { ...currentState, mainNotes: updatedNotes });
   },
 });
-
-const checkArrayMap = (notes: Note[], newValue: Note, type: keyof Note) => {
-  return notes.map((note) => {
-    return note.id === newValue.id ? { ...note, [type]: !note[type] } : note;
-  });
-};
 
 export const readSelector = selector({
   key: "readSelector",
@@ -185,61 +207,89 @@ export const removeTagsSelector = selector({
   },
 });
 
+const moveNotes = (
+  type: string,
+  noteState: NotesList,
+  noteName: keyof NotesList,
+  setNewNote: Note
+) => {
+  const pathname =
+    window.location.pathname.length > 1 ? window.location.pathname : "/main";
+
+  // main에서 ->archive냐 ->trash냐 구분
+  // main이 아닌곳으로 보내는 경우는 archive->trash 로 가는 경우 밖에 없으므로
+  // isMain으로 구분
+  // const unState = noteName.includes(pathname.slice(1, pathname.length));
+
+  // // const isMain =
+  // //   pathname.includes("archive") && type === "trash"
+  // //     ? "archiveNotes"
+  // //     : "mainNotes";
+
+  const isMain: keyof NotesList =
+    pathname.includes("archive") && type === "trash"
+      ? "archiveNotes"
+      : "mainNotes";
+  const unState = noteName.includes(pathname.slice(1, pathname.length));
+
+  const fromNotes = unState ? noteState[noteName] : noteState[isMain];
+  const toNotes = unState ? noteState[isMain] : noteState[noteName];
+
+  let stayNotes = [] as Note[];
+  let changeNotes = [] as Note[];
+
+  if (fromNotes) {
+    const fromNotesArray = Array.isArray(fromNotes) ? fromNotes : [fromNotes];
+    let toNotesArray = [] as Note[];
+    if (toNotes !== null && !Array.isArray(toNotes)) {
+      toNotesArray = [toNotes];
+    }
+    // const toNotesArray = toNotes === null ? [] : toNotes;
+    stayNotes = fromNotesArray.filter(({ id }) => id !== setNewNote.id);
+    changeNotes = [...toNotesArray, setNewNote];
+  }
+
+  // let stayNotes,
+  //   changeNotes = null;
+  // if (fromNotes) {
+  //   stayNotes = fromNotes.filter(({ id }) => id !== setNewNote.id);
+  //   changeNotes = [...toNotes, setNewNote];
+  // }
+
+  return {
+    ...noteState,
+    [isMain]: unState ? changeNotes : stayNotes,
+    [noteName]: unState ? stayNotes : changeNotes,
+  };
+};
+
 export const setArchiveSelector = selector({
   key: "setArchiveSelector",
   get: ({ get }) => {
-    return get(singleNoteAtom);
+    return get(moveToNoteAtom);
   },
   set: ({ get, set }, newValue) => {
     const currentNoteState = get(notesListState);
-    const pathname = window.location.pathname;
-    const setNewNote = newValue as Note;
+    const { type, note: setNewNote } = newValue as moveToNoteType;
+    const result = { ...setNewNote, isRead: !setNewNote.isRead };
 
-    const toNotes = pathname === "/archive";
-    const fromNotes = toNotes
-      ? currentNoteState.mainNotes
-      : currentNoteState.archiveNotes;
-    const toMainNotes = toNotes
-      ? currentNoteState.archiveNotes
-      : currentNoteState.mainNotes;
-
-    const newMainNotes = toMainNotes.filter(({ id }) => id !== setNewNote.id);
-    const newArchiveNotes = [...fromNotes, setNewNote];
-
-    set(notesListState, {
-      ...currentNoteState,
-      mainNotes: toNotes ? newArchiveNotes : newMainNotes,
-      archiveNotes: toNotes ? newMainNotes : newArchiveNotes,
-    });
+    const a = moveNotes(type, currentNoteState, "archiveNotes", result);
+    set(notesListState, a);
   },
 });
 
 export const setTrashSelector = selector({
   key: "setTrashSelector",
   get: ({ get }) => {
-    return get(singleNoteAtom);
+    return get(moveToNoteAtom);
   },
   set: ({ get, set }, newValue) => {
     const currentNoteState = get(notesListState);
-    const pathname = window.location.pathname;
-    const setNewNote = newValue as Note;
+    const { type, note: setNewNote } = newValue as moveToNoteType;
+    const result = { ...setNewNote, isRead: !setNewNote.isRead };
+    const a = moveNotes(type, currentNoteState, "trashNotes", result);
 
-    const toNotes = pathname === "/trash";
-    const fromNotes = toNotes
-      ? currentNoteState.mainNotes
-      : currentNoteState.trashNotes;
-    const toMainNotes = toNotes
-      ? currentNoteState.trashNotes
-      : currentNoteState.mainNotes;
-
-    const newMainNotes = toMainNotes.filter(({ id }) => id !== setNewNote.id);
-    const newArchiveNotes = [...fromNotes, setNewNote];
-
-    set(notesListState, {
-      ...currentNoteState,
-      mainNotes: toNotes ? newArchiveNotes : newMainNotes,
-      trashNotes: toNotes ? newMainNotes : newArchiveNotes,
-    });
+    set(notesListState, a);
   },
 });
 

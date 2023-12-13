@@ -69,7 +69,6 @@ export const ButtonOutline = styled.button`
 export const NotesIconBox = styled.span`
   padding: 0 6px;
   cursor: pointer;
-
   svg {
     transition: 250ms color ease-in-out;
     font-size: 14px;

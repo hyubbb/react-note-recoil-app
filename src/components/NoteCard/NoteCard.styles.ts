@@ -9,6 +9,7 @@ export const Card = styled.div`
   margin: 0px 35px 35px 0px;
   background-color: white;
   transition: 250ms box-shadow ease-in-out, 300ms transform ease-out;
+  cursor: pointer;
 
   &:hover {
     transform: scale(1.05);
@@ -24,6 +25,8 @@ export const TopBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  position: relative;
+  z-index: 1;
 
   .noteCard__title {
     font-weight: 600;
@@ -39,7 +42,7 @@ export const TopBox = styled.div`
       text-transform: uppercase;
       font-size: 12px;
       font-weight: 600;
-      margin-right: 10px;
+      margin-right: 20px;
     }
 
     .noteCard__pin {
@@ -55,7 +58,7 @@ export const ContentBox = styled.div`
   height: 65px;
   margin: 15px 0 10px;
   font-size: 14px;
-  cursor: pointer;
+
   overflow-y: hidden;
 
   img {
@@ -68,7 +71,11 @@ export const ContentBox = styled.div`
 export const TagsBox = styled.div`
   height: 25px;
   margin-bottom: 15px;
-  overflow: scroll;
+  /* overflow: scroll; */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
   span {
     display: inline;
     background-color: rgba(0, 0, 0, 0.07);
@@ -78,6 +85,7 @@ export const TagsBox = styled.div`
     font-size: 11px;
     font-weight: 500;
     margin-right: 8px;
+    margin-bottom: 8px;
   }
 
   &::-webkit-scrollbar {

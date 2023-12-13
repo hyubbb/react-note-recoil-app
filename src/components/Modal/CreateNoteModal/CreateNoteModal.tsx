@@ -22,6 +22,7 @@ import {
 } from "../../../recoil/atoms/modalState";
 import {
   notesListState,
+  setEditNoteSelector,
   setMainNotesSelector,
 } from "../../../recoil/atoms/notesListState";
 import { toast } from "react-toastify";
@@ -35,19 +36,23 @@ const CreateNoteModal = () => {
   const [addedTags, setAddedTags] = useState(editNote?.tags || []);
   const [noteColor, setNoteColor] = useState(editNote?.color || "");
   const [priority, setPriority] = useState(editNote?.priority || "low");
-
+  const setEditNote = useSetRecoilState(setEditNoteSelector);
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
   const setCreateNoteState = useSetRecoilState(setMainNotesSelector);
   const closeCreateNoteModal = () => {
     setTagsModalState({ state: "create", value: false });
-    // dispatch(toggleCreateNoteModal(false));
-    // dispatch(setEditNote(null));
+    setEditNote(null);
   };
-
+  console.log("");
+  console.log(editNote);
   const tagsHandler = (tag: string, type: string) => {
     const newTag = tag.toLocaleLowerCase();
 
     if (type === "add") {
+      if (addedTags.length >= 5) {
+        toast.error("태그는 5개까지만 추가 가능합니다.");
+        return;
+      }
       setAddedTags((prev) => [...prev, { tag: newTag, id: v4() }]);
     } else {
       setAddedTags(addedTags.filter(({ tag }) => tag !== newTag));
@@ -95,6 +100,7 @@ const CreateNoteModal = () => {
     //   return { ...currentNotes, mainNotes: [...currentNotes.mainNotes, note] };
     // });
     setTagsModalState({ state: "create", value: false });
+    setEditNote(null);
     // dispatch(setEditNote(null));
   };
 
