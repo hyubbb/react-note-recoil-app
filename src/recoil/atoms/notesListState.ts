@@ -219,12 +219,6 @@ const moveNotes = (
   // main에서 ->archive냐 ->trash냐 구분
   // main이 아닌곳으로 보내는 경우는 archive->trash 로 가는 경우 밖에 없으므로
   // isMain으로 구분
-  // const unState = noteName.includes(pathname.slice(1, pathname.length));
-
-  // // const isMain =
-  // //   pathname.includes("archive") && type === "trash"
-  // //     ? "archiveNotes"
-  // //     : "mainNotes";
 
   const isMain: keyof NotesList =
     pathname.includes("archive") && type === "trash"
@@ -244,17 +238,9 @@ const moveNotes = (
     if (toNotes !== null && !Array.isArray(toNotes)) {
       toNotesArray = [toNotes];
     }
-    // const toNotesArray = toNotes === null ? [] : toNotes;
     stayNotes = fromNotesArray.filter(({ id }) => id !== setNewNote.id);
     changeNotes = [...toNotesArray, setNewNote];
   }
-
-  // let stayNotes,
-  //   changeNotes = null;
-  // if (fromNotes) {
-  //   stayNotes = fromNotes.filter(({ id }) => id !== setNewNote.id);
-  //   changeNotes = [...toNotes, setNewNote];
-  // }
 
   return {
     ...noteState,
