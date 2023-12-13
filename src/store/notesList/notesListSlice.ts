@@ -5,15 +5,6 @@ import { atom } from "recoil";
 
 import { selector } from "recoil";
 
-// export const getAllNotesData = selector({
-//   key: "getAllNotesData",
-//   get: ({ get }) => {
-//     const getAllNotesData = get(initialState.mainNotes);
-//     return getAllNotesData;
-//   },
-// });
-// hooks
-
 import { useRecoilState } from "recoil";
 import { notesListState } from "../index";
 

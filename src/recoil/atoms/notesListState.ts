@@ -207,40 +207,56 @@ export const removeTagsSelector = selector({
   },
 });
 
-const moveNotes = (
-  type: string,
-  noteState: NotesList,
-  noteName: keyof NotesList,
-  setNewNote: Note
-) => {
+const determineNotePaths = (noteName: keyof NotesList, type: string) => {
   const pathname =
     window.location.pathname.length > 1 ? window.location.pathname : "/main";
-
-  // main에서 ->archive냐 ->trash냐 구분
   // main이 아닌곳으로 보내는 경우는 archive->trash 로 가는 경우 밖에 없으므로
-  // isMain으로 구분
-
-  const isMain: keyof NotesList =
+  const isMain =
     pathname.includes("archive") && type === "trash"
-      ? "archiveNotes"
-      : "mainNotes";
+      ? noteType.archiveNotes
+      : noteType.mainNotes;
+
   const unState = noteName.includes(pathname.slice(1, pathname.length));
+  return { isMain, unState };
+};
 
-  const fromNotes = unState ? noteState[noteName] : noteState[isMain];
-  const toNotes = unState ? noteState[isMain] : noteState[noteName];
-
+const updateNoteLists = (
+  toNotes: Note[],
+  fromNotes: Note,
+  setNewNote: Note
+) => {
   let stayNotes = [] as Note[];
   let changeNotes = [] as Note[];
 
   if (fromNotes) {
     const fromNotesArray = Array.isArray(fromNotes) ? fromNotes : [fromNotes];
     let toNotesArray = [] as Note[];
-    if (toNotes !== null && !Array.isArray(toNotes)) {
-      toNotesArray = [toNotes];
+    if (toNotes !== null) {
+      toNotesArray = Array.isArray(toNotes) ? toNotes : [toNotes];
     }
     stayNotes = fromNotesArray.filter(({ id }) => id !== setNewNote.id);
     changeNotes = [...toNotesArray, setNewNote];
   }
+
+  return { stayNotes, changeNotes };
+};
+
+const moveNotes = (
+  type: string,
+  noteState: NotesList,
+  noteName: keyof NotesList,
+  setNewNote: Note
+) => {
+  const { isMain, unState } = determineNotePaths(noteName, type);
+
+  const fromNotes = unState ? noteState[noteName] : noteState[isMain];
+  const toNotes = unState ? noteState[isMain] : noteState[noteName];
+
+  const { stayNotes, changeNotes } = updateNoteLists(
+    toNotes as Note[],
+    fromNotes as Note,
+    setNewNote as Note
+  );
 
   return {
     ...noteState,
