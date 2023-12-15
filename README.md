@@ -3,6 +3,7 @@
 `react`, `recoil`, `typescript` 사용
 
 react-note-app 의 리팩토링 버전
+
 redux를 recoil로 변경
 
 # todo
