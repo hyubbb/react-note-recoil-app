@@ -13,9 +13,9 @@ export const StyledNav = styled.div`
   }
 
   @media screen and (max-width: 950px) {
-    padding: 0 15px;
+    padding: 0 20px;
     .nav__menu {
-      display: block;
+      display: none;
       flex-basis: 5%;
       margin: 8px 10px 0px 0px;
       svg {
@@ -37,12 +37,28 @@ export const Container = styled.div`
     font-size: 1.3rem;
   }
 
-  @media screen and (max-width: 950px) {
-    margin-top: 7px;
+  .title__icon__mobile {
+    display: none;
+    font-size: 1.2rem;
+    padding-left: 6px;
+    color: black;
+    /* display: ${({ $openMenu }) => ($openMenu ? "none" : "block")}; */
+  }
+
+  @media screen and (max-width: 430px) {
+    /* justify-content: center; */
+    /* margin-top: 7px; */
+    .title__icon__mobile {
+      position: absolute;
+      display: block;
+      left: 0;
+      margin-top: 5px;
+      margin-left: 24px;
+    }
   }
 `;
 
-export const TagList = styled.div`
+export const TagList = styled.ul`
   display: flex;
   padding: 20px 10px 0px;
 

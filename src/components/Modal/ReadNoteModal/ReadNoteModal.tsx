@@ -4,10 +4,7 @@ import { FaTimes } from "react-icons/fa";
 import { Note } from "../../../types/note";
 import parse from "html-react-parser";
 import { useSetRecoilState } from "recoil";
-import {
-  readSelector,
-  setPinnedSelector,
-} from "../../../recoil/atoms/notesListState";
+import { setPinnedSelector } from "../../../recoil/atoms/notesListState";
 import { NotesIconBox } from "../../../styles/styles";
 import { BsFillPinFill } from "react-icons/bs";
 import { ContentBox, FooterBox } from "../../NoteCard/NoteCard.styles";
@@ -16,10 +13,10 @@ import GetRelevantBtns from "../../../utils/getRelevantBtns";
 interface ReadNoteModalProps {
   note: Note;
   type: string;
+  viewHandler: (props: boolean) => void;
 }
 
-const ReadNoteModal = ({ note, type }: ReadNoteModalProps) => {
-  const setRead = useSetRecoilState(readSelector);
+const ReadNoteModal = ({ note, type, viewHandler }: ReadNoteModalProps) => {
   const { priority, isPinned, content, tags, date } = note;
   const setPinned = useSetRecoilState(setPinnedSelector);
   const funcPinned = (e: Event) => {
@@ -40,7 +37,7 @@ const ReadNoteModal = ({ note, type }: ReadNoteModalProps) => {
       <Box style={{ backgroundColor: note.color }}>
         <DeleteBox
           className='readNote__close-btn'
-          onClick={() => setRead({ type, id: note.id })}
+          onClick={() => viewHandler(false)}
         >
           <FaTimes />
         </DeleteBox>

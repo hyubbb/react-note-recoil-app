@@ -1,39 +1,66 @@
-import { useRef } from "react";
+import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Container, ItemsBox, MainBox, StyledLogo } from "./Sidebar.styles";
-import { FaArchive, FaLightbulb, FaTag, FaTrash } from "react-icons/fa";
-import { MdEdit } from "react-icons/md";
+import { GoInbox, GoLightBulb, GoTrash, GoTag } from "react-icons/go";
+import { CgMenuGridO } from "react-icons/cg";
 import getStandardName from "../../utils/getStandardName";
 import { v4 } from "uuid";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { menuState } from "../../recoil/atoms/menuListState";
-import useOnClickOutside from "../../hooks/useOnClickOutside";
-import { tagsListState } from "../../recoil/atoms/tagsListState";
 import { toggleTagsModalSelector } from "../../recoil/atoms/modalState";
 
 const items = [
-  { icon: <FaArchive />, title: "Archive", id: v4() },
-  { icon: <FaTrash />, title: "Trash", id: v4() },
+  { icon: <GoInbox />, title: "Archive", id: v4() },
+  { icon: <GoTrash />, title: "Trash", id: v4() },
 ];
 
 const Sidebar = () => {
-  // const dispatch = useDispatch();
   const { pathname } = useLocation();
-
   const [isOpen, setIsOpen] = useRecoilState(menuState);
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
+  useEffect(() => {
+    const handleScroll = () => {
+      const elm = document.querySelector(".mainBox");
+      if (window.innerWidth > 950) {
+        elm?.classList.remove("open");
+      }
+    };
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
 
-  const ref = useRef<HTMLDivElement>(null);
-  useOnClickOutside({ ref, handler: () => setIsOpen(false) });
+  const Sidebar = () => {
+    const elm = document.querySelector(".mainBox");
+    elm?.classList.toggle("open");
+  };
+
+  const SidebarMobile = () => {
+    // const elm = document.querySelector(".mainBox");
+    // elm?.classList.toggle("mobile");
+    setIsOpen((prev) => !prev);
+  };
 
   if (pathname === "/404") return null;
 
   return (
-    <Container $openMenu={isOpen ? "open" : ""} className='menu__background'>
-      <MainBox $openMenu={isOpen ? "open" : ""} ref={ref}>
+    <Container $openMenu={isOpen} className='menu__background'>
+      <MainBox $openMenu={isOpen} className='mainBox open'>
         <StyledLogo>
-          <h1>Keep</h1>
+          <div className='title__icon' onClick={() => Sidebar()}>
+            <CgMenuGridO />
+          </div>
+
+          <div className='title__icon__mobile' onClick={() => SidebarMobile()}>
+            <CgMenuGridO />
+          </div>
+
+          <div className='title__menu__name'>
+            <h1>Keep</h1>
+          </div>
         </StyledLogo>
+
         <ItemsBox>
           <li onClick={() => setIsOpen(false)}>
             <NavLink
@@ -44,9 +71,9 @@ const Sidebar = () => {
               }
             >
               <span>
-                <FaLightbulb />
+                <GoLightBulb />
               </span>
-              <span>{getStandardName("notes")}</span>
+              <span className='menu__name'>{getStandardName("notes")}</span>
             </NavLink>
           </li>
 
@@ -61,7 +88,7 @@ const Sidebar = () => {
                 }
               >
                 <span>{icon}</span>
-                <span>{title}</span>
+                <span className='menu__name'>{title}</span>
               </NavLink>
             </li>
           ))}
@@ -71,9 +98,9 @@ const Sidebar = () => {
             onClick={() => setTagsModalState({ state: "edit", value: true })}
           >
             <span>
-              <MdEdit />
+              <GoTag />
             </span>
-            <span>Edit Tags</span>
+            <span className='menu__name'>Edit Tags</span>
           </li>
         </ItemsBox>
       </MainBox>

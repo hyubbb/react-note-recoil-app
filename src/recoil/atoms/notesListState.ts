@@ -30,10 +30,10 @@ interface moveToNoteType {
   type: string;
   note: Note;
 }
-const readInitialState = {
-  type: "",
-  id: "",
-};
+// const readInitialState = {
+//   type: "",
+//   id: "",
+// };
 
 const moveToNoteState: moveToNoteType = {
   type: "",
@@ -61,9 +61,16 @@ export const moveToNoteAtom = atom({
   key: "moveToNoteAtom",
   default: moveToNoteState,
 });
-const readStateAtom = atom({
-  key: "readStateAtom",
-  default: readInitialState,
+
+export const allNotesListState = selector({
+  key: "allNotesListState",
+  get: ({ get }) => {
+    const result: Note[] = [
+      ...get(notesListState).mainNotes,
+      ...get(notesListState).archiveNotes,
+    ];
+    return result;
+  },
 });
 
 export const setNotesSelector = selector({
@@ -138,40 +145,6 @@ export const setPinnedSelector = selector({
     );
 
     set(notesListState, { ...currentState, mainNotes: updatedNotes });
-  },
-});
-
-export const readSelector = selector({
-  key: "readSelector",
-  get: ({ get }) => {
-    return get(readStateAtom);
-  },
-  set: ({ get, set }, newValue) => {
-    /**
-     * mainNotes, archiveNotes, trashNotes 을 구분해줘야한다.
-     */
-
-    const currentState = get(notesListState);
-    const valueType = newValue as Note;
-    let result;
-    const setRead = (note: noteType) => {
-      return checkArrayMap(currentState[note], newValue as Note, "isRead");
-    };
-
-    if (valueType.type === "archive") {
-      result = {
-        [noteType.archiveNotes]: setRead(noteType.archiveNotes),
-      };
-    } else if (valueType.type === "trash") {
-      result = {
-        [noteType.trashNotes]: setRead(noteType.trashNotes),
-      };
-    } else {
-      result = {
-        [noteType.mainNotes]: setRead(noteType.mainNotes),
-      };
-    }
-    set(notesListState, { ...currentState, ...result });
   },
 });
 
@@ -273,10 +246,15 @@ export const setArchiveSelector = selector({
   set: ({ get, set }, newValue) => {
     const currentNoteState = get(notesListState);
     const { type, note: setNewNote } = newValue as moveToNoteType;
-    const result = { ...setNewNote, isRead: !setNewNote.isRead };
 
-    const a = moveNotes(type, currentNoteState, "archiveNotes", result);
-    set(notesListState, a);
+    const result = moveNotes(
+      type,
+      currentNoteState,
+      "archiveNotes",
+      setNewNote
+    );
+
+    set(notesListState, result);
   },
 });
 
@@ -288,10 +266,10 @@ export const setTrashSelector = selector({
   set: ({ get, set }, newValue) => {
     const currentNoteState = get(notesListState);
     const { type, note: setNewNote } = newValue as moveToNoteType;
-    const result = { ...setNewNote, isRead: !setNewNote.isRead };
-    const a = moveNotes(type, currentNoteState, "trashNotes", result);
 
-    set(notesListState, a);
+    const result = moveNotes(type, currentNoteState, "trashNotes", setNewNote);
+
+    set(notesListState, result);
   },
 });
 

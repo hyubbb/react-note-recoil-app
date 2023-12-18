@@ -26,9 +26,9 @@ const filterNotes = (notes: Note[], filter: string) => {
   }
 };
 
-const getAllNotes = (mainNotes: Note[], filter: string) => {
-  const pinned = mainNotes.filter(({ isPinned }) => isPinned);
-  const normal = mainNotes.filter(({ isPinned }) => !isPinned);
+const getAllNotes = (allNotes: Note[], filter: string) => {
+  const pinned = allNotes.filter(({ isPinned }) => isPinned);
+  const normal = allNotes.filter(({ isPinned }) => !isPinned);
 
   // only normal
   if (normal.length !== 0 && pinned.length === 0) {

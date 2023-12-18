@@ -1,0 +1,33 @@
+{
+  "notes":[
+    {
+      "title": "Note 1 title",
+      "content": "Note 1 content",
+      "tags": [
+        { "tag": "coding", "id": 1 },
+        { "tag": "exercise", "id": 2}
+      ],
+      "color": "#cce0ff",
+      "priority": "high",
+      "isPinned": true,
+      "isRead": false,
+      "date": "10/12/22 2.55 PM",
+      "createdTime": "Sat Dec 10  2022 14:55:22",
+      "editedTime": null,
+      "id":1
+    },
+    {
+      "title": "Note 2 title",
+      "content": "Note 2 content",
+      "tags": [{ "tag": "exercise", "id": 2}],
+      "color": "#ffcccc",
+      "priority": "high",
+      "isPinned": false,
+      "isRead": false,
+      "date": "10/12/22 2.55 PM",
+      "createdTime":"Sat Dec 11  2022 14:55:22",
+      "editedTime": null,
+      "id": 2
+    }
+  ]
+}

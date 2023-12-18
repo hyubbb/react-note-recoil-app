@@ -10,11 +10,9 @@ import { BsFillPinFill } from "react-icons/bs";
 import { Note } from "../../types/note";
 import parse from "html-react-parser";
 import ReadNoteModal from "../Modal/ReadNoteModal/ReadNoteModal";
-import {
-  readSelector,
-  setPinnedSelector,
-} from "../../recoil/atoms/notesListState";
+import { setPinnedSelector } from "../../recoil/atoms/notesListState";
 import { useSetRecoilState } from "recoil";
+import { useState } from "react";
 
 interface NoteCardProps {
   note: Note;
@@ -22,11 +20,8 @@ interface NoteCardProps {
 }
 
 const NoteCard = ({ note, type }: NoteCardProps) => {
-  const { title, content, tags, color, priority, date, isPinned, isRead, id } =
-    note;
-
+  const { title, content, tags, color, priority, date, isPinned } = note;
   const setPinned = useSetRecoilState(setPinnedSelector);
-  const setRead = useSetRecoilState(readSelector);
   const func = () => {
     const chkImg = content.includes("img src=");
     if (chkImg) {
@@ -35,16 +30,23 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
       return content.length > 40 ? content.slice(0, 40) + "..." : content;
     }
   };
-  const funcPinned = (e: Event) => {
+  const funcPinned = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPinned(note);
+  };
+  const [isView, setIsView] = useState(false);
+  const viewHandler = (props: boolean) => {
+    setIsView(props);
   };
 
   return (
     <>
-      {isRead && <ReadNoteModal note={note} type={type} />}
-
-      <Card style={{ background: color }} onClick={() => setRead({ type, id })}>
+      {isView && (
+        <ReadNoteModal note={note} type={type} viewHandler={viewHandler} />
+      )}
+      <Card style={{ background: color }} onClick={() => setIsView(true)}>
+        {/* {isRead && <ReadNoteModal note={note} type={type} />} */}
+        {/* <Card style={{ background: color }} onClick={() => setRead({ type, id })}> */}
         <TopBox>
           <div className='noteCard__title'>
             {title.length > 10 ? title.slice(0, 10) + "..." : title}
@@ -59,7 +61,6 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
                 <BsFillPinFill style={{ color: isPinned ? "red" : "" }} />
               </NotesIconBox>
             )}
-            {/* <div className='noteCard__pic'></div> */}
           </div>
         </TopBox>
         <ContentBox>{parse(func())}</ContentBox>

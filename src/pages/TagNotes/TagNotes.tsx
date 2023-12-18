@@ -3,19 +3,17 @@ import { Note } from "../../types/note";
 import { ButtonOutline, Container, EmptyMsgBox } from "../../styles/styles";
 import getAllNotes from "../../utils/getAllNotes";
 import { Box, TopBox } from "../AllNotes/AllNotes.styles";
-// import { FiltersModal } from "../../components";
 import { useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { notesListState } from "../../recoil/atoms/notesListState";
+import { allNotesListState } from "../../recoil/atoms/notesListState";
 import {
   modalState,
   toggleTagsModalSelector,
 } from "../../recoil/atoms/modalState";
 import { FiltersModal } from "../../components";
-// import { toggleFiltersModal } from "../../store/modal/modalSlice";
 
 const TagNotes = () => {
-  const { mainNotes } = useRecoilValue(notesListState);
+  const allNotes = useRecoilValue(allNotesListState);
   const setToggleFiltersModal = useSetRecoilState(toggleTagsModalSelector);
   const { state: type } = useLocation();
   const [filter, setFilter] = useState("");
@@ -30,13 +28,13 @@ const TagNotes = () => {
     setFilter("");
   };
 
-  mainNotes.forEach((note) => {
-    note.tags.filter(({ tag }) => {
-      if (tag === type) {
-        notes.push(note);
-      }
+  if (type !== "all") {
+    allNotes.forEach((note) => {
+      note.tags.filter(({ tag }) => tag === type && notes.push(note));
     });
-  });
+  } else {
+    notes.push(...allNotes);
+  }
 
   return (
     <>
