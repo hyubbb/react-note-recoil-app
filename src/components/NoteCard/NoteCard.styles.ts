@@ -1,8 +1,6 @@
 import styled from "styled-components";
 
 export const Card = styled.div`
-  /* width: clamp(200px, 100%, 265px); */
-  /* height: 220px; */
   border-radius: 16px;
   box-shadow: 0px 1.5px 3px 0px rgba(0, 0, 0, 0.2);
   padding: 20px;
@@ -10,7 +8,7 @@ export const Card = styled.div`
   background-color: white;
   transition: 250ms box-shadow ease-in-out, 300ms transform ease-out;
   flex: 1 0 auto;
-  max-width: 300px;
+  max-width: 400px;
   position: relative;
   cursor: pointer;
   ${(props) => (props.color === "#f1f3f5" ? "color: black" : "color: white")};
@@ -67,7 +65,7 @@ export const TopBox = styled.div`
 `;
 
 export const ContentBox = styled.div`
-  /* width: 100%; */
+  width: 150px;
   height: 80px;
   margin: 15px 0 10px;
   font-size: 14px;
