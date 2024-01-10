@@ -4,7 +4,7 @@ export const FixedContainer = styled.div`
   position: fixed;
   top: 0px;
   right: 0px;
-  z-index: 5;
+  z-index: 4;
   width: 100%;
   height: 100vh;
   display: flex;
@@ -12,9 +12,12 @@ export const FixedContainer = styled.div`
   justify-content: center;
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(3px);
+  &.zIndex {
+    z-index: 10;
+  }
 
-  &.low {
-    z-index: 4;
+  &.tagModal {
+    z-index: 11;
   }
 `;
 

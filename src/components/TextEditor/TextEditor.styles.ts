@@ -2,7 +2,9 @@ import styled from "styled-components";
 
 export const Container = styled.div<{ $noteColor: string }>`
   .ql-editor {
-    height: 200px;
+    min-height: 200px;
+    max-height: 700px;
+
     background-color: ${(props) => props.$noteColor};
   }
 `;

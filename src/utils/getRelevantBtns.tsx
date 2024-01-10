@@ -3,52 +3,62 @@ import { RiInboxUnarchiveFill } from "react-icons/ri";
 import { NotesIconBox } from "../styles/styles";
 import { Note } from "../types/note";
 import { useSetRecoilState } from "recoil";
-import {
-  removeNoteSelector,
-  setArchiveSelector,
-  setEditNoteSelector,
-  setTrashSelector,
-} from "../recoil/atoms/notesListState";
+import { setEditNoteSelector } from "../recoil/atoms/notesListState";
 import { toggleTagsModalSelector } from "../recoil/atoms/modalState";
+import { useMoveToNote } from "../server/hooks/useRemoveNote";
+import usePathNameisTag from "./usePathNameisTag";
 
 const GetRelevantBtns = (type: string, note: Note) => {
+  const isTag = usePathNameisTag();
   const toggleNoteModal = useSetRecoilState(toggleTagsModalSelector);
-  const setArchiveNotes = useSetRecoilState(setArchiveSelector);
-  const setTrashNotes = useSetRecoilState(setTrashSelector);
   const setEditNote = useSetRecoilState(setEditNoteSelector);
-  const deleteNote = useSetRecoilState(removeNoteSelector);
+
+  const { removeAndMove } = useMoveToNote();
+
   const clickHandler = () => {
     toggleNoteModal({ state: "create", value: true });
     setEditNote(note);
-
-    // dispatch(toggleCreateNoteModal(true));
   };
 
   const stateHandler = (state: string) => {
-    // console.log(type);
-    console.log("handler : ", state);
-    if (state === "trash") {
-      // setRead({ type, id });
-      setTrashNotes({ type: state, note });
-    } else if (state === "archive") {
-      // console.log(note);;
-      setArchiveNotes({ type: state, note });
+    const from: string = type === "notes" ? "mainNotes" : type + "Notes";
+    if (state === "trashNotes") {
+      removeAndMove({ from, state, note });
+    } else if (state === "archiveNotes") {
+      // setArchiveNotes({ type: state, note });
+      removeAndMove({ from, state, note });
     } else if (state === "delete") {
-      setArchiveNotes({ type: state, note });
+      removeAndMove({ from, state, note });
+    } else {
+      removeAndMove({ from, state, note });
     }
   };
+
+  if (isTag) {
+    return (
+      <NotesIconBox onClick={clickHandler} data-info='edit'>
+        <FaEdit style={{ fontsize: "1rem" }} />
+      </NotesIconBox>
+    );
+  }
 
   if (type === "archive") {
     return (
       <>
         {/* data-info is used for tooltip */}
+        <NotesIconBox onClick={clickHandler} data-info='edit'>
+          <FaEdit style={{ fontsize: "1rem" }} />
+        </NotesIconBox>
         <NotesIconBox
-          onClick={() => stateHandler("archive")}
+          onClick={() => stateHandler("mainNotes")}
           data-info='Unarchive'
         >
           <RiInboxUnarchiveFill style={{ fontsize: "1rem" }} />
         </NotesIconBox>
-        <NotesIconBox onClick={() => stateHandler("trash")} data-info='Delete'>
+        <NotesIconBox
+          onClick={() => stateHandler("trashNotes")}
+          data-info='Delete'
+        >
           <FaTrash />
         </NotesIconBox>
       </>
@@ -57,10 +67,13 @@ const GetRelevantBtns = (type: string, note: Note) => {
     return (
       <>
         {/* data-info is used for tooltip */}
-        <NotesIconBox onClick={() => stateHandler("trash")} data-info='Restore'>
+        <NotesIconBox
+          onClick={() => stateHandler("mainNotes")}
+          data-info='Restore'
+        >
           <FaTrashRestore style={{ fontsize: "1rem" }} />
         </NotesIconBox>
-        <NotesIconBox onClick={() => deleteNote(note)} data-info='Delete'>
+        <NotesIconBox onClick={() => stateHandler("delete")} data-info='Delete'>
           <FaTrash />
         </NotesIconBox>
       </>
@@ -73,12 +86,15 @@ const GetRelevantBtns = (type: string, note: Note) => {
           <FaEdit style={{ fontsize: "1rem" }} />
         </NotesIconBox>
         <NotesIconBox
-          onClick={() => stateHandler("archive")}
+          onClick={() => stateHandler("archiveNotes")}
           data-info='Archive'
         >
           <FaArchive />
         </NotesIconBox>
-        <NotesIconBox onClick={() => stateHandler("trash")} data-info='Delete'>
+        <NotesIconBox
+          onClick={() => stateHandler("trashNotes")}
+          data-info='Delete'
+        >
           <FaTrash />
         </NotesIconBox>
       </>

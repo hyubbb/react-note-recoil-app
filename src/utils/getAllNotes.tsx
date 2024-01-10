@@ -26,17 +26,38 @@ const filterNotes = (notes: Note[], filter: string) => {
   }
 };
 
-const getAllNotes = (allNotes: Note[], filter: string) => {
+const getAllNotes = (
+  allNotes: Note[],
+  filter: string,
+  isTag?: boolean,
+  type?: string
+) => {
   const pinned = allNotes.filter(({ isPinned }) => isPinned);
   const normal = allNotes.filter(({ isPinned }) => !isPinned);
+
+  // only normal
+  if (isTag) {
+    return (
+      <>
+        <div className='allNotes__notes-type'>
+          {type} Tag <span>{normal.length}</span>
+        </div>
+        <NotesContainer>
+          {filterNotes(allNotes, filter).map((note) => (
+            <NoteCard key={note.id} note={note} type='notes' />
+          ))}
+        </NotesContainer>
+      </>
+    );
+  }
 
   // only normal
   if (normal.length !== 0 && pinned.length === 0) {
     return (
       <>
-        <div className='allNotes__notes-type'>
+        {/* <div className='allNotes__notes-type'>
           All Notes <span>{normal.length}</span>
-        </div>
+        </div> */}
         <NotesContainer>
           {filterNotes(normal, filter).map((note) => (
             <NoteCard key={note.id} note={note} type='notes' />
@@ -50,9 +71,9 @@ const getAllNotes = (allNotes: Note[], filter: string) => {
   if (normal.length === 0 && pinned.length !== 0) {
     return (
       <>
-        <div className='allNotes__notes-type'>
+        {/* <div className='allNotes__notes-type'>
           Pinned <span>{pinned.length}</span>
-        </div>
+        </div> */}
         <NotesContainer>
           {filterNotes(pinned, filter).map((note) => (
             <NoteCard key={note.id} note={note} type='notes' />
@@ -66,18 +87,22 @@ const getAllNotes = (allNotes: Note[], filter: string) => {
   if (normal.length !== 0 && pinned.length !== 0) {
     return (
       <>
-        <div className='allNotes__notes-type'>
+        {/* <div className='allNotes__notes-type'>
           Pinned <span>{pinned.length}</span>
-        </div>
+        </div> */}
+        {/* <NotesContainer>
+          {filterNotes(pinned, filter).map((note) => (
+            <NoteCard key={note.id} note={note} type='notes' />
+          ))}
+        </NotesContainer> */}
+        {/* <div className='allNotes__notes-type'>
+          All Notes <span>{normal.length}</span>
+        </div> */}
         <NotesContainer>
           {filterNotes(pinned, filter).map((note) => (
             <NoteCard key={note.id} note={note} type='notes' />
           ))}
-        </NotesContainer>
-        <div className='allNotes__notes-type'>
-          All Notes <span>{normal.length}</span>
-        </div>
-        <NotesContainer>
+
           {filterNotes(normal, filter).map((note) => (
             <NoteCard key={note.id} note={note} type='notes' />
           ))}

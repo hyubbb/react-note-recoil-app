@@ -23,28 +23,28 @@ import {
 import {
   notesListState,
   setEditNoteSelector,
-  setMainNotesSelector,
 } from "../../../recoil/atoms/notesListState";
 import { toast } from "react-toastify";
 import TextEditor from "../../TextEditor/TextEditor";
-
+import useCreateNote from "../../../server/hooks/useCreateNote";
+import Tiptap from "../../TextEditor/Tiptap";
 const CreateNoteModal = () => {
   const { editNote } = useRecoilValue(notesListState);
   const { viewAddTagsModal } = useRecoilValue(modalState);
+  const { asyncCreateNote, asyncEditNote } = useCreateNote();
+
   const [noteTitle, setNoteTitle] = useState(editNote?.title || "");
   const [value, setValue] = useState(editNote?.content || "");
   const [addedTags, setAddedTags] = useState(editNote?.tags || []);
-  const [noteColor, setNoteColor] = useState(editNote?.color || "");
+  const [noteColor, setNoteColor] = useState(editNote?.color || "#f1f3f5");
   const [priority, setPriority] = useState(editNote?.priority || "low");
   const setEditNote = useSetRecoilState(setEditNoteSelector);
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
-  const setCreateNoteState = useSetRecoilState(setMainNotesSelector);
   const closeCreateNoteModal = () => {
     setTagsModalState({ state: "create", value: false });
     setEditNote(null);
   };
-  console.log("");
-  console.log(editNote);
+
   const tagsHandler = (tag: string, type: string) => {
     const newTag = tag.toLocaleLowerCase();
 
@@ -71,7 +71,7 @@ const CreateNoteModal = () => {
     const date = dayjs().format("YY/MM/DD h:mm A");
 
     let note: Note = {
-      ...editNote!,
+      ...(editNote as Note),
       title: noteTitle,
       content: value,
       tags: addedTags,
@@ -80,9 +80,10 @@ const CreateNoteModal = () => {
       editedTime: new Date().getTime(),
     };
 
-    // 수정중이라는 뜻
-    if (editNote) {
+    const isEdit = editNote?.id ? "edit" : "create";
+    if (isEdit == "edit") {
       note = { ...editNote, ...note };
+      asyncEditNote(note);
     } else {
       note = {
         ...note,
@@ -93,20 +94,16 @@ const CreateNoteModal = () => {
         isRead: false,
         id: v4(),
       };
+      asyncCreateNote(note);
     }
-    // setCreateNoteState(note);
-    setCreateNoteState(note);
-    // setCreateNoteState((currentNotes) => {
-    //   return { ...currentNotes, mainNotes: [...currentNotes.mainNotes, note] };
-    // });
+
     setTagsModalState({ state: "create", value: false });
     setEditNote(null);
-    // dispatch(setEditNote(null));
   };
 
   return (
     <>
-      <FixedContainer>
+      <FixedContainer className='zIndex'>
         {viewAddTagsModal && (
           <TagsModal
             type='add'
@@ -114,7 +111,7 @@ const CreateNoteModal = () => {
             handleTags={tagsHandler}
           />
         )}
-        <Box>
+        <Box style={{ zIndex: 10 }}>
           <TopBox>
             <div className='createNote_title'>Create Note</div>
             <DeleteBox
@@ -131,9 +128,10 @@ const CreateNoteModal = () => {
             value={noteTitle}
             onChange={(e) => setNoteTitle(e.target.value)}
           />
-          <div>
-            <TextEditor color={noteColor} value={value} setValue={setValue} />
-          </div>
+          <TextEditor color={noteColor} value={value} setValue={setValue} />
+
+          {/* <Tiptap /> */}
+
           <AddedTagsBox>
             {addedTags.map(({ tag, id }) => (
               <div key={id}>
@@ -161,11 +159,11 @@ const CreateNoteModal = () => {
                 id='color'
                 onChange={(e) => setNoteColor(e.target.value)}
               >
-                <option value=''>white</option>
-                <option value='#ffcccc'>red</option>
-                <option value='#ccffcc'>green</option>
-                <option value='#cce0ff'>blue</option>
-                <option value='#ffffcc'>yellow</option>
+                <option value='#f1f3f5'>white</option>
+                <option value='#ff6b6b'>red</option>
+                <option value='#69db7c'>green</option>
+                <option value='#4dabf7'>blue</option>
+                <option value='#ffd43b'>yellow</option>
               </select>
             </div>
 

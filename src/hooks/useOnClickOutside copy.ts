@@ -1,19 +1,19 @@
 import { useEffect } from "react";
 
 interface IProps {
-  elm: string;
   ref: React.RefObject<HTMLElement>;
   handler: () => void;
 }
 
-export default function useOnClickOutside({ elm, ref, handler }: IProps) {
+export default function useOnClickOutside({ ref, handler }: IProps): void {
+  const bgElm = document.querySelector(".menu__background") || document;
   useEffect(() => {
-    const bgElm = document.getElementsByClassName(elm)[0] || document;
     const listener = (e: Event) => {
       // 내부클릭
       if (!ref.current || ref.current.contains(e.target as Node)) {
         return;
       }
+      // 외부클릭
       handler();
     };
     bgElm.addEventListener("mousedown", listener);

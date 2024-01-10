@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Container } from "./TextEditor.styles";
 import "react-quill/dist/quill.snow.css";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
+import ImageResize from "quill-image-resize";
+Quill.register("modules/ImageResize", ImageResize);
 
 interface textEditorProps {
   value: string;
@@ -9,34 +11,41 @@ interface textEditorProps {
   color: string;
 }
 
-const formats = [
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "list",
-
-  "color",
-  "background",
-
-  "image",
-  "blockquote",
-  "code-block",
-];
-
-const modules = {
-  toolbar: [
-    [{ list: "ordered" }, { list: "bullet" }],
-    [],
-    ["italic", "underline", "strike"],
-    [],
-    [{ color: [] }, { background: [] }],
-    [],
-    ["image", "blockquote", "code-block"],
-  ],
-};
-
 const TextEditor = ({ color, value, setValue }: textEditorProps) => {
+  const formats = [
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+
+    "color",
+    "background",
+
+    "image",
+    "blockquote",
+    "code-block",
+  ];
+
+  // const imageHandler = () => {};
+
+  const modules = useMemo(() => {
+    return {
+      toolbar: [
+        [{ list: "ordered" }, { list: "bullet" }],
+        [],
+        ["italic", "underline", "strike"],
+        [],
+        [{ color: [] }, { background: [] }],
+        [],
+        ["image", "blockquote", "code-block"],
+      ],
+      ImageResize: {
+        parchment: Quill.import("parchment"),
+      },
+    };
+  }, []);
+
   return (
     <>
       <Container $noteColor={color}>

@@ -5,8 +5,11 @@ import { FaMinus, FaPlus, FaTimes } from "react-icons/fa";
 import getStandardName from "../../../utils/getStandardName";
 import { v4 } from "uuid";
 import { Tag } from "../../../types/tag";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { tagsListSelector } from "../../../recoil/atoms/tagsListState";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  tagsListSelector,
+  tagsListState,
+} from "../../../recoil/atoms/tagsListState";
 import { toggleTagsModalSelector } from "../../../recoil/atoms/modalState";
 import { removeTagsSelector } from "../../../recoil/atoms/notesListState";
 
@@ -17,11 +20,11 @@ interface TagsModalProps {
 }
 
 const TagsModal = ({ type, addedTags, handleTags }: TagsModalProps) => {
-  const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
   const [inputText, setInputText] = useState("");
-  const [tagsState, setTagsState] = useRecoilState(tagsListSelector);
-  const { tagsList } = tagsState;
+  const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
   const setRemoveToNoteTags = useSetRecoilState(removeTagsSelector);
+  const setTagsState = useSetRecoilState(tagsListSelector);
+  const { tagsList } = useRecoilValue(tagsListState);
 
   const deleteTagHandler = (tag: Tag): void => {
     setTagsState({ type: "delete", tagsList: [tag] });
@@ -31,13 +34,16 @@ const TagsModal = ({ type, addedTags, handleTags }: TagsModalProps) => {
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (!inputText) return;
-    const newTag = { tag: inputText.toLocaleLowerCase(), id: v4() };
+    const newTag: Tag = {
+      tag: inputText.toLocaleLowerCase(),
+      id: v4(),
+    };
     setTagsState({ type: "add", tagsList: [newTag] });
     setInputText("");
   };
 
   return (
-    <FixedContainer>
+    <FixedContainer className='tagModal'>
       <Box>
         <div className='editTags__header'>
           <div className='editTags__title'>
@@ -59,27 +65,28 @@ const TagsModal = ({ type, addedTags, handleTags }: TagsModalProps) => {
           />
         </form>
         <TagsBox>
-          {tagsList?.map(({ tag, id }, idx) => (
-            <li key={id}>
-              <div className='editTags__tag'>{getStandardName(tag)}</div>
-              {type === "edit" ? (
-                <DeleteBox onClick={() => deleteTagHandler(tagsList[idx])}>
-                  <FaTimes />
-                </DeleteBox>
-              ) : (
-                <DeleteBox>
-                  {addedTags?.find(
-                    (addedTag) => addedTag.tag === tag.toLowerCase()
-                  ) ? (
-                    <FaMinus onClick={() => handleTags!(tag, "remove")} />
-                  ) : (
-                    // interface에서 ?연산자를 사용했지만, 이 경우에서의 함수는 항상 있기 때문에, 타입단언을 해줘야함
-                    <FaPlus onClick={() => handleTags!(tag, "add")} />
-                  )}
-                </DeleteBox>
-              )}
-            </li>
-          ))}
+          {tagsList &&
+            tagsList?.map(({ tag, id }, idx) => (
+              <li key={id}>
+                <div className='editTags__tag'>{getStandardName(tag)}</div>
+                {type === "edit" ? (
+                  <DeleteBox onClick={() => deleteTagHandler(tagsList[idx])}>
+                    <FaTimes />
+                  </DeleteBox>
+                ) : (
+                  <DeleteBox>
+                    {addedTags?.find(
+                      (addedTag) => addedTag.tag === tag.toLowerCase()
+                    ) ? (
+                      <FaMinus onClick={() => handleTags!(tag, "remove")} />
+                    ) : (
+                      // interface에서 ?연산자를 사용했지만, 이 경우에서의 함수는 항상 있기 때문에, 타입단언을 해줘야함
+                      <FaPlus onClick={() => handleTags!(tag, "add")} />
+                    )}
+                  </DeleteBox>
+                )}
+              </li>
+            ))}
         </TagsBox>
       </Box>
     </FixedContainer>

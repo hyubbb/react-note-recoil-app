@@ -4,7 +4,9 @@
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
-
+body::-webkit-scrollbar {
+  display: none;
+}
 :root {
   --primary-color: rgb(253, 239, 195);
 }

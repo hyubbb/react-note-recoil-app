@@ -1,9 +1,10 @@
-import { notesListState } from "../../recoil/atoms/notesListState";
 import { Container, EmptyMsgBox } from "../../styles/styles";
-import { useRecoilValue } from "recoil";
 import { MainWrapper } from "../../components";
+import useGetAllNotes from "../../server/hooks/useGetAllNotes";
 const ArchiveNotes = () => {
-  const { archiveNotes } = useRecoilValue(notesListState);
+  const { notesData } = useGetAllNotes("archiveNotes");
+  const archiveNotes = notesData.archiveNotes || [];
+
   return (
     <>
       <Container>

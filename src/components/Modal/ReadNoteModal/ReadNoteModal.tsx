@@ -1,14 +1,22 @@
-import { Box, TagsBox, TopBox } from "./ReadNoteModal.styles";
+import {
+  Box,
+  ContentBox,
+  FooterBox,
+  TagsBox,
+  TopBox,
+} from "./ReadNoteModal.styles";
 import { DeleteBox, FixedContainer } from "../Modal.styles";
-import { FaTimes } from "react-icons/fa";
+import { FaStar, FaTimes } from "react-icons/fa";
 import { Note } from "../../../types/note";
 import parse from "html-react-parser";
 import { useSetRecoilState } from "recoil";
 import { setPinnedSelector } from "../../../recoil/atoms/notesListState";
 import { NotesIconBox } from "../../../styles/styles";
-import { BsFillPinFill } from "react-icons/bs";
-import { ContentBox, FooterBox } from "../../NoteCard/NoteCard.styles";
+
 import GetRelevantBtns from "../../../utils/getRelevantBtns";
+import usePathNameisTag from "../../../utils/usePathNameisTag";
+import useOnClickOutside from "../../../hooks/useOnClickOutside";
+import { useRef } from "react";
 
 interface ReadNoteModalProps {
   note: Note;
@@ -17,12 +25,21 @@ interface ReadNoteModalProps {
 }
 
 const ReadNoteModal = ({ note, type, viewHandler }: ReadNoteModalProps) => {
-  const { priority, isPinned, content, tags, date } = note;
+  const { priority, isPinned, content, tags, date, color } = note;
   const setPinned = useSetRecoilState(setPinnedSelector);
+  const ref = useRef<HTMLDivElement>(null);
+
   const funcPinned = (e: Event) => {
     e.stopPropagation();
     setPinned(note);
   };
+
+  const modalClose = () => {
+    viewHandler(false);
+  };
+
+  useOnClickOutside({ elm: "readModal", ref, handler: modalClose });
+  const isTag = usePathNameisTag();
 
   const func = () => {
     const chkImg = content.includes("img src=");
@@ -32,31 +49,28 @@ const ReadNoteModal = ({ note, type, viewHandler }: ReadNoteModalProps) => {
       return content.length > 40 ? content.slice(0, 40) + "..." : content;
     }
   };
+
   return (
-    <FixedContainer className='low'>
-      <Box style={{ backgroundColor: note.color }}>
-        <DeleteBox
-          className='readNote__close-btn'
-          onClick={() => viewHandler(false)}
-        >
+    <FixedContainer className='readModal'>
+      <Box style={{ backgroundColor: color }} ref={ref}>
+        <DeleteBox className='readNote__close-btn' onClick={modalClose}>
           <FaTimes />
         </DeleteBox>
-        <TopBox>
+        <TopBox color={color}>
           <div className='readNote__title'>{note.title}</div>
           <div className='noteCard__top-options'>
             <span className='noteCard__priority'>{priority}</span>
-            {type !== "archive" && type !== "trash" && (
+            {type !== "archive" && type !== "trash" && !isTag && (
               <NotesIconBox
                 className='noteCard__pin'
                 onClick={(e) => funcPinned(e)}
               >
-                <BsFillPinFill style={{ color: isPinned ? "red" : "" }} />
+                <FaStar style={{ color: isPinned ? "red" : "" }} />
               </NotesIconBox>
             )}
-            {/* <div className='noteCard__pic'></div> */}
           </div>
         </TopBox>
-        <ContentBox>{parse(func())}</ContentBox>
+        <ContentBox color={color}>{parse(func())}</ContentBox>
         <TagsBox>
           {tags.map(({ tag, id }) => (
             <span key={id}>{tag}</span>

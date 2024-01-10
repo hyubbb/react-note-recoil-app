@@ -1,42 +1,32 @@
-import { notesListState } from "../../recoil/atoms/notesListState";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { ButtonOutline, Container, EmptyMsgBox } from "../../styles/styles";
 import { Box, TopBox } from "./AllNotes.styles";
 import { useState } from "react";
-import getAllNotes from "../../utils/getAllNotes";
 import {
   modalState,
   toggleTagsModalSelector,
 } from "../../recoil/atoms/modalState";
 import { FiltersModal } from "../../components";
+import getAllNotes from "../../utils/getAllNotes";
+import { notesListState } from "../../recoil/atoms/notesListState";
+
 const AllNotes = () => {
   const [filter, setFilter] = useState("");
-  const { mainNotes } = useRecoilValue(notesListState);
-
-  const filterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value);
-  };
-
-  const clearHandler = () => {
-    setFilter("");
-  };
-
   const { viewFiltersModal } = useRecoilValue(modalState);
-
   const setToggleFiltersModal = useSetRecoilState(toggleTagsModalSelector);
-
+  const { mainNotes } = useRecoilValue(notesListState);
   return (
     <>
       <Container>
         {viewFiltersModal && (
           <FiltersModal
-            handleFilter={filterHandler}
-            handleClear={clearHandler}
+            handleFilter={(e) => setFilter(e.target.value)}
+            handleClear={() => setFilter("")}
             filter={filter}
           />
         )}
 
-        {mainNotes?.length === 0 ? (
+        {mainNotes?.length < 0 ? (
           <EmptyMsgBox>노트가 없습니다.</EmptyMsgBox>
         ) : (
           <>

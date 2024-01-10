@@ -15,10 +15,10 @@ import { FiltersModal } from "../../components";
 const TagNotes = () => {
   const allNotes = useRecoilValue(allNotesListState);
   const setToggleFiltersModal = useSetRecoilState(toggleTagsModalSelector);
-  const { state: type } = useLocation();
+  const { state: type, pathname } = useLocation();
+  const isTag = pathname.includes("tag");
   const [filter, setFilter] = useState("");
   const notes: Note[] = [];
-
   const { viewFiltersModal } = useRecoilValue(modalState);
   const filterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
@@ -63,7 +63,7 @@ const TagNotes = () => {
                 </ButtonOutline>
               </div>
             </TopBox>
-            <Box>{getAllNotes(notes, filter)}</Box>
+            <Box>{getAllNotes(notes, filter, isTag, type)}</Box>
           </>
         )}
       </Container>

@@ -1,13 +1,15 @@
 import styled from "styled-components";
 
 export const Box = styled.div`
-  width: clamp(250px, 90%, 350px);
+  min-width: 300px;
+  max-width: 700px;
   max-height: 90vh;
   background-color: white;
   color: black;
   border-radius: 10px;
   padding: 20px 20px 25px;
   overflow: hidden;
+  overflow-y: auto;
 
   .readNote__close-btn {
     width: 100%;
@@ -24,9 +26,24 @@ export const Box = styled.div`
   .readNote__content {
     font-size: clamp(15px, 1.3vw, 1rem);
     img {
-      width: 100%;
       border-radius: 10px;
     }
+  }
+`;
+
+export const ContentBox = styled.div`
+  width: 100%;
+  min-width: 200px;
+  min-height: 100px;
+  margin: 15px 0 10px;
+  font-size: 14px;
+  overflow-y: hidden;
+
+  ${(props) => (props.color === "#f1f3f5" ? "color: black" : "color: #e9ecef")};
+
+  img {
+    width: 100%;
+    border-radius: 5px;
   }
 `;
 
@@ -37,7 +54,8 @@ export const TopBox = styled.div`
   position: relative;
   z-index: 1;
   margin-top: 20px;
-
+  border-bottom: 1px solid black;
+  ${(props) => (props.color === "#f1f3f5" ? "color: black" : "color: white")};
   .noteCard__title {
     font-weight: 600;
     font-size: 1.15rem;
@@ -66,7 +84,6 @@ export const TopBox = styled.div`
 export const TagsBox = styled.div`
   height: 25px;
   margin-bottom: 15px;
-  /* overflow: scroll; */
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -85,5 +102,15 @@ export const TagsBox = styled.div`
 
   &::-webkit-scrollbar {
     display: none;
+  }
+`;
+export const FooterBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  .noteCard__date {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.6);
   }
 `;

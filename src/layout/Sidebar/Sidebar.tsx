@@ -37,8 +37,6 @@ const Sidebar = () => {
   };
 
   const SidebarMobile = () => {
-    // const elm = document.querySelector(".mainBox");
-    // elm?.classList.toggle("mobile");
     setIsOpen((prev) => !prev);
   };
 
@@ -46,7 +44,7 @@ const Sidebar = () => {
 
   return (
     <Container $openMenu={isOpen} className='menu__background'>
-      <MainBox $openMenu={isOpen} className='mainBox open'>
+      <MainBox $openMenu={isOpen} className='mainBox'>
         <StyledLogo>
           <div className='title__icon' onClick={() => Sidebar()}>
             <CgMenuGridO />

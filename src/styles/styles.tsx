@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   padding: 25px 0px 25px 25px;
+
   @media screen and (max-width: 650px) {
     padding: 20px;
   }
@@ -11,6 +12,10 @@ export const NotesContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 15px;
+
+  @media screen and (max-width: 650px) {
+    justify-content: center;
+  }
 `;
 
 export const EmptyMsgBox = styled.div`
@@ -36,7 +41,7 @@ export const ButtonFill = styled.button`
     background-color: rgb(253, 239, 195, 0.5);
   }
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 768px) {
     padding: 6px 12px;
   }
 `;
@@ -71,7 +76,7 @@ export const NotesIconBox = styled.span`
   cursor: pointer;
   svg {
     transition: 250ms color ease-in-out;
-    font-size: 14px;
+    font-size: 13px;
     color: rgba(0, 0, 0, 0.5);
   }
 

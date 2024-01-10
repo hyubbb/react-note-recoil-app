@@ -1,8 +1,8 @@
-import { atom } from "recoil";
+import { atom, selectorFamily } from "recoil";
 import { Note, singleNote } from "../../types/note";
-import notes from "../../notesData";
 import { selector } from "recoil";
 import { Tag, tagsState } from "../../types/tag";
+import { getAllNoteList, setNoteList, updateNote } from "../../server/api";
 
 // 메뉴 상태를 위한 Atom
 
@@ -12,7 +12,7 @@ enum noteType {
   mainNotes = "mainNotes",
 }
 
-interface NotesList {
+export interface NotesList {
   mainNotes: Note[];
   archiveNotes: Note[];
   trashNotes: Note[];
@@ -20,7 +20,7 @@ interface NotesList {
 }
 
 const initialState: NotesList = {
-  mainNotes: [...notes],
+  mainNotes: [],
   archiveNotes: [],
   trashNotes: [],
   editNote: null,
@@ -30,10 +30,6 @@ interface moveToNoteType {
   type: string;
   note: Note;
 }
-// const readInitialState = {
-//   type: "",
-//   id: "",
-// };
 
 const moveToNoteState: moveToNoteType = {
   type: "",
@@ -62,12 +58,21 @@ export const moveToNoteAtom = atom({
   default: moveToNoteState,
 });
 
+export const notesListSelector = selectorFamily({
+  key: "notesListSelector",
+  get: () => async () => {
+    const notesData = await getAllNoteList.getNotes();
+    return notesData;
+  },
+});
+
 export const allNotesListState = selector({
   key: "allNotesListState",
   get: ({ get }) => {
     const result: Note[] = [
       ...get(notesListState).mainNotes,
       ...get(notesListState).archiveNotes,
+      ...get(notesListState).trashNotes,
     ];
     return result;
   },
@@ -76,41 +81,79 @@ export const allNotesListState = selector({
 export const setNotesSelector = selector({
   key: "setNotesSelector",
   get: ({ get }) => {
-    return get(notesListState);
+    return get(singleNoteAtom);
   },
 });
 
-export const setMainNotesSelector = selector({
+export const setMainNotesSelector = selector<NotesList | Note>({
   key: "setMainNotesSelector",
   get: ({ get }) => {
-    return get(singleNoteAtom);
+    return get(notesListState);
   },
   set: ({ get, set }, newValue) => {
-    const currentNoteState = get(notesListState);
+    const { id: noteId } = newValue as Note;
+
     const newNote = newValue as Note;
-
-    const isEditOrCreate = currentNoteState.mainNotes.find(
-      ({ id }) => id === newNote.id
-    );
-
+    const allData = get(notesListState);
+    const hasNoteType = allData.mainNotes.filter(({ id }) => id === noteId);
     let updateNotes;
-    if (isEditOrCreate) {
-      const addNote = currentNoteState.mainNotes.map((note) =>
+
+    const pathname = hasNoteType.length > 0 ? "mainNotes" : "archiveNotes";
+    const noteTypeData = allData[pathname as keyof NotesList] as Note[];
+    const isEdit = noteTypeData.find(({ id }) => id === newNote.id);
+    if (isEdit) {
+      const addNote = allData[pathname].map((note) =>
         note.id === newNote.id ? newNote : note
       );
-      updateNotes = {
-        ...currentNoteState,
-        mainNotes: [...addNote],
-      };
+      updateNotes = { [pathname]: [...addNote] };
+      // updateNote.update({ newNote, pathname });
     } else {
-      updateNotes = {
-        ...currentNoteState,
-        mainNotes: [...currentNoteState.mainNotes, newNote],
-      };
+      updateNotes = { mainNotes: [...allData.mainNotes, newNote] };
+      // const fetchResult = setNoteList.create(newNote);
     }
+    const result = {
+      ...allData,
+      ...updateNotes,
+    };
 
-    set(notesListState, updateNotes);
+    set(notesListState, result);
   },
+});
+
+export const setMainNotesSelector1 = selectorFamily<NotesList | Note, string>({
+  key: "setMainNotesSelector1",
+  get:
+    () =>
+    ({ get }) => {
+      return get(notesListState);
+    },
+  set:
+    (pathname) =>
+    ({ get, set }, newValue) => {
+      const currentNoteState = get(notesListState);
+      const noteTypeData = currentNoteState[
+        pathname as keyof NotesList
+      ] as Note[];
+      const newNote = newValue as Note;
+      updateNote.update({ newNote, pathname }); // pathname 사용
+
+      let updateNotes;
+      const isEdit = noteTypeData.find(({ id }) => id === newNote.id);
+      if (isEdit) {
+        const addNote = noteTypeData.map((note) =>
+          note.id === newNote.id ? newNote : note
+        );
+        updateNotes = [...addNote];
+      } else {
+        updateNotes = [...noteTypeData, newNote];
+      }
+      const result = {
+        ...currentNoteState,
+        [pathname]: updateNotes,
+      };
+
+      set(notesListState, result);
+    },
 });
 
 export const setEditNoteSelector = selector({
@@ -143,7 +186,7 @@ export const setPinnedSelector = selector({
       newValue as Note,
       "isPinned"
     );
-
+    updateNote.pin(newValue as Note);
     set(notesListState, { ...currentState, mainNotes: updatedNotes });
   },
 });
@@ -176,116 +219,9 @@ export const removeTagsSelector = selector({
       trashNotes: updateTrashNotes,
     };
 
+    // console.log(updateNotes);
+    updateNote.removeTag(updateNotes);
+
     set(notesListState, updateNotes);
-  },
-});
-
-const determineNotePaths = (noteName: keyof NotesList, type: string) => {
-  const pathname =
-    window.location.pathname.length > 1 ? window.location.pathname : "/main";
-  // main이 아닌곳으로 보내는 경우는 archive->trash 로 가는 경우 밖에 없으므로
-  const isMain =
-    pathname.includes("archive") && type === "trash"
-      ? noteType.archiveNotes
-      : noteType.mainNotes;
-
-  const unState = noteName.includes(pathname.slice(1, pathname.length));
-  return { isMain, unState };
-};
-
-const updateNoteLists = (
-  toNotes: Note[],
-  fromNotes: Note,
-  setNewNote: Note
-) => {
-  let stayNotes = [] as Note[];
-  let changeNotes = [] as Note[];
-
-  if (fromNotes) {
-    const fromNotesArray = Array.isArray(fromNotes) ? fromNotes : [fromNotes];
-    let toNotesArray = [] as Note[];
-    if (toNotes !== null) {
-      toNotesArray = Array.isArray(toNotes) ? toNotes : [toNotes];
-    }
-    stayNotes = fromNotesArray.filter(({ id }) => id !== setNewNote.id);
-    changeNotes = [...toNotesArray, setNewNote];
-  }
-
-  return { stayNotes, changeNotes };
-};
-
-const moveNotes = (
-  type: string,
-  noteState: NotesList,
-  noteName: keyof NotesList,
-  setNewNote: Note
-) => {
-  const { isMain, unState } = determineNotePaths(noteName, type);
-
-  const fromNotes = unState ? noteState[noteName] : noteState[isMain];
-  const toNotes = unState ? noteState[isMain] : noteState[noteName];
-
-  const { stayNotes, changeNotes } = updateNoteLists(
-    toNotes as Note[],
-    fromNotes as Note,
-    setNewNote as Note
-  );
-
-  return {
-    ...noteState,
-    [isMain]: unState ? changeNotes : stayNotes,
-    [noteName]: unState ? stayNotes : changeNotes,
-  };
-};
-
-export const setArchiveSelector = selector({
-  key: "setArchiveSelector",
-  get: ({ get }) => {
-    return get(moveToNoteAtom);
-  },
-  set: ({ get, set }, newValue) => {
-    const currentNoteState = get(notesListState);
-    const { type, note: setNewNote } = newValue as moveToNoteType;
-
-    const result = moveNotes(
-      type,
-      currentNoteState,
-      "archiveNotes",
-      setNewNote
-    );
-
-    set(notesListState, result);
-  },
-});
-
-export const setTrashSelector = selector({
-  key: "setTrashSelector",
-  get: ({ get }) => {
-    return get(moveToNoteAtom);
-  },
-  set: ({ get, set }, newValue) => {
-    const currentNoteState = get(notesListState);
-    const { type, note: setNewNote } = newValue as moveToNoteType;
-
-    const result = moveNotes(type, currentNoteState, "trashNotes", setNewNote);
-
-    set(notesListState, result);
-  },
-});
-
-export const removeNoteSelector = selector({
-  key: "removeNoteSelector",
-  get: ({ get }) => {
-    return get(singleNoteAtom);
-  },
-  set: ({ get, set }, newValue) => {
-    const currentState = get(notesListState);
-    const removeNote = newValue as Note;
-
-    const newNotes = currentState.trashNotes.filter(
-      ({ id }) => id !== removeNote.id
-    );
-
-    set(notesListState, { ...currentState, trashNotes: newNotes });
   },
 });

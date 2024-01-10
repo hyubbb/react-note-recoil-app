@@ -1,0 +1,117 @@
+{
+  "mainNotes": [
+    {
+      "id": 2,
+      "title": "Note 2 title",
+      "content": "Note 2 content",
+      "tags": [
+        {
+          "tag": "exercise",
+          "id": 2
+        }
+      ],
+      "color": "#ffcccc",
+      "priority": "high",
+      "isPinned": false,
+      "isRead": false,
+      "date": "10/12/22 2.55 PM",
+      "createdTime": "Sat Dec 11  2022 14:55:22",
+      "editedTime": null
+    }, {
+      "id": 1,
+      "title": "Note 1 title",
+      "content": "Note 1 content",
+      "tags": [
+        {
+          "tag": "coding",
+          "id": 1
+        },
+        {
+          "tag": "exercise",
+          "id": 2
+        }
+      ],
+      "color": "#cce0ff",
+      "priority": "high",
+      "isPinned": true,
+      "isRead": false,
+      "date": "10/12/22 2.55 PM",
+      "createdTime": "Sat Dec 10  2022 14:55:22",
+      "editedTime": null
+    },
+    {
+      "id": 3,
+      "title": "Note 3 title",
+      "content": "Note 3 content",
+      "tags": [
+        {
+          "tag": "exercise",
+          "id": 2
+        }
+      ],
+      "color": "#ffcccc",
+      "priority": "low",
+      "isPinned": false,
+      "isRead": false,
+      "date": "10/12/22 2.55 PM",
+      "createdTime": "Sat Dec 12  2022 14:55:22",
+      "editedTime": null
+    },{
+      "id": 4,
+      "title": "Note 4 title",
+      "content": "Note 4 content",
+      "tags": [
+        {
+          "tag": "exercise",
+          "id": 2
+        }
+      ],
+      "color": "#ffcccc",
+      "priority": "low",
+      "isPinned": false,
+      "isRead": false,
+      "date": "10/12/22 2.55 PM",
+      "createdTime": "Sat Dec 12  2022 14:55:22",
+      "editedTime": null
+    },{
+      "id": 5,
+      "title": "Note 5 title",
+      "content": "Note 5 content",
+      "tags": [
+        {
+          "tag": "exercise",
+          "id": 2
+        }
+      ],
+      "color": "#ffcccc",
+      "priority": "low",
+      "isPinned": false,
+      "isRead": false,
+      "date": "10/12/22 2.55 PM",
+      "createdTime": "Sat Dec 12  2022 14:55:22",
+      "editedTime": null
+    }
+  ],
+  "archiveNotes": [
+    {
+      "id": 6,
+      "title": "Note 6 title",
+      "content": "Note 36 content",
+      "tags": [
+        {
+          "tag": "exercise",
+          "id": 2
+        }
+      ],
+      "color": "#ffcccc",
+      "priority": "low",
+      "isPinned": false,
+      "isRead": false,
+      "date": "10/12/22 2.55 PM",
+      "createdTime": "Sat Dec 12  2022 14:55:22",
+      "editedTime": null
+    }
+  ],
+  "trashNotes": [],
+  "editNote": {}
+}

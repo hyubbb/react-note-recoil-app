@@ -42,12 +42,9 @@ export const Container = styled.div`
     font-size: 1.2rem;
     padding-left: 6px;
     color: black;
-    /* display: ${({ $openMenu }) => ($openMenu ? "none" : "block")}; */
   }
 
   @media screen and (max-width: 430px) {
-    /* justify-content: center; */
-    /* margin-top: 7px; */
     .title__icon__mobile {
       position: absolute;
       display: block;
@@ -61,6 +58,8 @@ export const Container = styled.div`
 export const TagList = styled.ul`
   display: flex;
   padding: 20px 10px 0px;
+  overflow: hidden;
+  text-wrap: nowrap;
 
   li {
     list-style: none;

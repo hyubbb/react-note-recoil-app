@@ -7,7 +7,7 @@ export const Container = styled.nav<{ $openMenu: boolean }>`
     z-index: 2;
     top: 0;
     left: 0;
-    height: 100vh;
+    /* height: 100vh; */
     transition: 200ms visibility ease-in-out, 250ms background-color ease-in-out;
 
     cursor: pointer;
