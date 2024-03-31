@@ -3,8 +3,8 @@ import { Note } from "../types/note";
 import { Tag } from "../types/tag";
 import { NotesList } from "../recoil/atoms/notesListState";
 
-const LOCALHOST = process.env.APP_HOST;
-const PORT = process.env.APP_LOCALPORT || 3100;
+const LOCALHOST = import.meta.env.VITE_APP_HOST;
+const PORT = import.meta.env.VITE_APP_LOCALPORT || 3100;
 
 export const getAllNoteList = {
   getNotes: async (type: string) => {

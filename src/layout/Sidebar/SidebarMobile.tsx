@@ -7,7 +7,7 @@ import {
   StyledLogo,
 } from "./SibebarMobile.styles";
 import { GoInbox, GoLightBulb, GoTrash } from "react-icons/go";
-import { CgClose, CgMenuGridO } from "react-icons/cg";
+import { CgClose } from "react-icons/cg";
 import getStandardName from "../../utils/getStandardName";
 import { useRecoilState } from "recoil";
 import { menuMobileState } from "../../recoil/atoms/menuListState";

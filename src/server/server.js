@@ -20,7 +20,6 @@ const app = express();
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 app.use(compression());
-console.log(path.join(__dirname, "..", "..", "dist"));
 app.use(express.static(path.join(__dirname, "..", "..", "dist")));
 
 app.use(
@@ -31,12 +30,6 @@ const PORT = process.env.APP_LOCALPORT || 3100;
 const LOCALHOST = process.env.APP_HOST;
 const allowedOrigins = [`http://${LOCALHOST}:${PORT}`];
 app.use(cors({ origin: allowedOrigins }));
-
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-  })
-);
 
 app.get("/api/note/:noteType", (req, res) => {
   const type = req.params.noteType;
