@@ -5,7 +5,6 @@ import getAllNotes from "../../utils/getAllNotes";
 import { Box, TopBox } from "../AllNotes/AllNotes.styles";
 import { useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { allNotesListState } from "../../recoil/atoms/notesListState";
 import {
   modalState,
   toggleTagsModalSelector,
@@ -13,7 +12,8 @@ import {
 import { FiltersModal } from "../../components";
 
 const TagNotes = () => {
-  const allNotes = useRecoilValue(allNotesListState);
+  // const allNotes = useRecoilValue(allNotesListState);
+  const allNotes = [];
   const setToggleFiltersModal = useSetRecoilState(toggleTagsModalSelector);
   const { state: type, pathname } = useLocation();
   const isTag = pathname.includes("tag");

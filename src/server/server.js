@@ -1,347 +1,307 @@
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import path from "path";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 import bodyParser from "body-parser";
 import compression from "compression";
-import { env } from "process";
+import multer from "multer";
+import dotenv from "dotenv";
+import connection from "./mysql.js";
+dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: ".env.development" });
+} else {
+  dotenv.config({ path: ".env.production" });
+}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
-
-const dbPath = path.join("./src/server", "./db.json");
-
-const PORT = env.PORT || 3100;
-// JSON 요청 본문을 파싱하기 위한 미들웨어
-app.use(
-  express.json({
-    limit: "5mb",
-  })
-);
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 app.use(compression());
+app.use(express.static(path.join(__dirname, "..", "..", "build")));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "..", "..", "public", "uploads"))
+);
+const PORT = process.env.APP_LOCALPORT || 3100;
+const LOCALHOST = process.env.APP_HOST;
+const allowedOrigins = [`http://${LOCALHOST}:${PORT}`];
+app.use(cors({ origin: allowedOrigins }));
+
 app.use(
   cors({
     origin: "http://localhost:5173",
   })
 );
 
-// middleware ; request.body로 간단하게 사용할 수 있게 해줌
-app.use(bodyParser.urlencoded({ extended: false, limit: "5mb" }));
-
-app.get("/", (req, res) => {
-  fs.readFile(dbPath, "utf8", (err, data) => {
+app.get("/api/note/:noteType", (req, res) => {
+  const type = req.params.noteType;
+  const query = "SELECT * FROM note.notes WHERE type = ?";
+  connection.query(query, [type], (err, results) => {
     if (err) {
-      res.status(500).send("Error 1reading data file");
-      return;
-    }
-    try {
-      const noteData = JSON.parse(data);
-      if (noteData.notes) {
-        res.json(noteData.notes);
-      } else {
-        res.status(500).send("No notes data found");
-      }
-      res.status(200).send({ message: "Note create successfully" });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
-    }
-  });
-});
-
-app.get("/api/note/allnotes", (req, res) => {
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      res.status(500).send("Error 1reading data file");
-      return;
-    }
-    try {
-      const noteData = JSON.parse(data);
-      if (noteData.notes) {
-        res.json(noteData.notes);
-      } else {
-        res.status(500).send("No notes data found");
-      }
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
-    }
-  });
-});
-
-app.get("/note/:noteType", (req, res) => {
-  const noteType = req.params.noteType + "Notes";
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      res.status(500).send("Error reading data file");
-      return;
-    }
-    try {
-      const noteData = JSON.parse(data);
-      if (noteData.notes[noteType]) {
-        res.json(noteData.notes[noteType]);
-      } else {
-        res.status(500).send("No notes data found");
-      }
-      res.status(200).send({ message: "Note create successfully" });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
+      res.status(500).send("Error querying the database");
+    } else {
+      res.json(results);
     }
   });
 });
 
 app.post("/api/note/create", (req, res) => {
-  const noteData = req.body; // 요청 본문에서 type 추출
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data file");
-    }
+  const { title, content, tags, color, priority, createdTime } = req.body;
+  const tagValue = tags.length > 0 ? JSON.stringify(tags) : "[]";
+  const query =
+    "INSERT INTO notes (title,content,tags,color,priority,createdTime) VALUES (?,?,?,?,?,?)";
 
-    try {
-      const allData = JSON.parse(data);
-      const updatedNote = {
-        ...allData.notes,
-        mainNotes: [...allData.notes.mainNotes, noteData],
-      };
-
-      const newNote = {
-        ...allData,
-        notes: updatedNote,
-      };
-      fs.writeFile(dbPath, JSON.stringify(newNote), (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res.status(500).send("Error writing data file");
-        }
-        // res.redirect("/");
-        res.status(200).send({ message: "Note create successfully" });
+  connection.query(
+    query,
+    [title, content, tagValue, color, priority, createdTime],
+    (error, results) => {
+      if (error) {
+        console.error("Error inserting data:", error);
+        return res.status(500).send("Error creating new note");
+      }
+      res.status(200).send({
+        message: "Note created successfully",
+        noteId: results.insertId,
       });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
     }
-  });
-});
-
-app.post("/api/note/move/:noteType", (req, res) => {
-  const to = req.params.noteType;
-  const { from, note: postNote } = req.body; // 요청 본문에서 type 추출
-
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data file");
-    }
-
-    try {
-      const allData = JSON.parse(data);
-      allData.notes[from] = allData.notes[from].filter(
-        (note) => note.id !== postNote.id
-      );
-      allData.notes[to] = [...allData.notes[to], postNote];
-
-      const newNote = { ...allData, notes: allData.notes };
-
-      fs.writeFile(dbPath, JSON.stringify(newNote), (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res.status(500).send("Error writing data file");
-        }
-        res.status(200).send({ message: "Note move successfully" });
-      });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
-    }
-  });
+  );
 });
 
 app.put("/api/note/update/:noteId", (req, res) => {
-  const noteId = req.params.noteId;
-  const { note: newNote, pathname } = req.body;
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data file");
+  const { noteId } = req.params;
+  const { note } = req.body;
+  const { title, content, isPinned, priority, color, tags } = note;
+  const tagValue = tags && tags.length > 0 ? JSON.stringify(tags) : "[]";
+
+  const query =
+    "UPDATE notes SET title = ?, content = ?, isPinned= ?, priority= ?, color= ?, tags= ? WHERE id = ?";
+  connection.query(
+    query,
+    [title, content, isPinned, priority, color, tagValue, noteId],
+    (error, results) => {
+      if (error) {
+        console.error("Error updating note:", error);
+        return res.status(500).send("Error updating note");
+      }
+      if (results.affectedRows === 0) {
+        return res.status(404).send("Note not found");
+      }
+      res.status(200).send({ message: "Note updated successfully" });
     }
-    try {
-      const allData = JSON.parse(data);
-      const changedNotes = allData.notes[pathname].map((note) => {
-        const typeOfNoteId = typeof note.id === "number" ? +noteId : noteId;
-        return note.id === typeOfNoteId ? newNote : note;
-      });
-      const newData = {
-        ...allData,
-        notes: { ...allData.notes, [pathname]: changedNotes },
-      };
-      fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res.status(500).send("Error writing data file");
-        }
-        res.status(200).send({ message: "Note update successfully" });
-      });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
-    }
-  });
+  );
 });
 
 app.delete("/api/note/delete/:noteId", (req, res) => {
   const noteId = req.params.noteId;
 
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data file");
+  const query = "DELETE FROM notes WHERE id = ?";
+
+  connection.query(query, [noteId], (error, results) => {
+    if (error) {
+      console.error("Error deleting note:", error);
+      return res.status(500).send("Error deleting note");
     }
-    try {
-      const allData = JSON.parse(data);
-      console.log(noteId);
-      const isNumberId = typeof noteId === "number" ? +noteId : noteId;
-      console.log(isNumberId);
-      const newNotes = allData.notes.trashNotes.filter(
-        (note) => note.id !== isNumberId
-      );
-      const newData = {
-        ...allData,
-        notes: { ...allData.notes, trashNotes: newNotes },
-      };
-      fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res.status(500).send("Error writing data file");
-        }
-        res.status(200).send({ message: "Note deleted successfully" });
-      });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
+
+    if (results.affectedRows === 0) {
+      return res.status(404).send("Note not found");
     }
+
+    res.status(200).send({ message: "Note deleted successfully" });
   });
 });
 
-app.patch("/api/note/update/pin/:noteId", (req, res) => {
-  const oldNote = req.body;
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data file");
-    }
-    try {
-      const allData = JSON.parse(data);
-      const { notes } = allData;
-      // const mainNotes = notes.mainNotes;
-      // notes.mainNotes.filter((note) => note.id === noteId ? { ...note, pinned: !note.pinned } : note);
+app.patch("/api/note/move/:noteId", (req, res) => {
+  const { type } = req.body;
+  const noteId = req.params.noteId;
+  const query = "UPDATE notes SET type = ? WHERE id = ?";
 
-      const newNote = notes.mainNotes.map((note) => {
-        return note.id === oldNote.id
-          ? { ...note, isPinned: !note.isPinned }
-          : note;
-      });
-      const newData = { ...allData, notes: { ...notes, mainNotes: newNote } };
-      fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res.status(500).send("Error writing data file");
-        }
-        res.status(200).send({ message: "Note deleted successfully" });
-        // res.json(newData);
-      });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
+  connection.query(query, [type, noteId], (error, results) => {
+    if (error) {
+      console.error("Error updating note:", error);
+      return res.status(500).send("Error updating note");
     }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).send("Note not found");
+    }
+
+    res.status(200).send({ message: "Note updated successfully" });
   });
 });
 
-app.patch("/api/note/remove/tag", (req, res) => {
-  const removedTagData = req.body;
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data file");
-    }
-    try {
-      const allData = JSON.parse(data);
+app.patch("/api/note/pin/:noteId", (req, res) => {
+  const noteId = req.params.noteId;
+  const query = "UPDATE notes SET isPinned = NOT isPinned WHERE id = ?";
 
-      const newData = {
-        ...allData,
-        notes: removedTagData,
-      };
-
-      fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res.status(500).send("Error writing data file");
-        }
-        res.status(200).send({ message: "Note deleted successfully" });
-        // res.json(newData);
-      });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
+  connection.query(query, [noteId], (error, results) => {
+    if (error) {
+      console.error("Error updating note:", error);
+      return res.status(500).send("Error updating note");
     }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).send("Note not found");
+    }
+
+    res.status(200).send({ message: "Note updated successfully" });
   });
 });
+
+app.patch("/api/note/priority/:noteId", (req, res) => {
+  const noteId = req.params.noteId;
+  const query = "UPDATE notes SET isPinned = NOT isPinned WHERE id = ?";
+
+  connection.query(query, [noteId], (error, results) => {
+    if (error) {
+      console.error("Error updating note:", error);
+      return res.status(500).send("Error updating note");
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).send("Note not found");
+    }
+
+    res.status(200).send({ message: "Note updated successfully" });
+  });
+});
+
+/**
+ *
+ * Quill editor API
+ *
+ */
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "upload/");
+  },
+  filename: function (req, file, cb) {
+    // 원래 파일의 확장자를 가져와서 저장
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + Date.now() + ext);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.post("/upload", upload.single("image"), (req, res) => {
+  const imageUrl = `/upload/${req.file.filename}`;
+  res.json({ imageUrl });
+});
+
+app.post("/deleteImage", (req, res) => {
+  const { imageUrl } = req.body;
+  fs.unlink(`.${imageUrl}`, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error deleting image");
+    }
+    res.status(200).send("Image delete successfully");
+  });
+});
+
+// app.patch("/api/note/remove/tag", (req, res) => {
+//   const removedTagData = req.body;
+//   fs.readFile(dbPath, "utf8", (err, data) => {
+//     if (err) {
+//       return res.status(500).send("Error reading data file");
+//     }
+//     try {
+//       const allData = JSON.parse(data);
+
+//       const newData = {
+//         ...allData,
+//         notes: removedTagData,
+//       };
+
+//       fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
+//         if (err) {
+//           console.error("Error writing to file:", err);
+//           return res.status(500).send("Error writing data file");
+//         }
+//         res.status(200).send({ message: "Note deleted successfully" });
+//         // res.json(newData);
+//       });
+//     } catch (parseError) {
+//       res.status(500).send("Error parsing JSON data");
+//     }
+//   });
+// });
 
 /***
  *
  * tag 관련 api
- */
+//  */
 
-app.get("/api/tag/alltags", (req, res) => {
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      res.status(500).send("Error 1reading data file");
-      return;
-    }
-    try {
-      const { tags } = JSON.parse(data);
-      if (tags) {
-        res.json(tags);
-      } else {
-        res.status(500).send("No notes data found");
-      }
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
-    }
-  });
-});
+// app.get("/api/tag/alltags", (req, res) => {
+//   fs.readFile(dbPath, "utf8", (err, data) => {
+//     if (err) {
+//       res.status(500).send("Error 1reading data file");
+//       return;
+//     }
+//     try {
+//       const { tags } = JSON.parse(data);
+//       if (tags) {
+//         res.json(tags);
+//       } else {
+//         res.status(500).send("No notes data found");
+//       }
+//     } catch (parseError) {
+//       res.status(500).send("Error parsing JSON data");
+//     }
+//   });
+// });
 
-app.post("/api/tag/update", (req, res) => {
-  const newTag = req.body;
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      res.status(500).send("Error 1reading data file");
-      return;
-    }
-    try {
-      const allData = JSON.parse(data);
-      const newData = { ...allData, tags: [...allData.tags, newTag] };
-      fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res.status(500).send("Error writing data file");
-        }
-        res.status(200).send({ message: "Tag created successfully" });
-      });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
-    }
-  });
-});
+// app.post("/api/tag/update", (req, res) => {
+//   const newTag = req.body;
+//   fs.readFile(dbPath, "utf8", (err, data) => {
+//     if (err) {
+//       res.status(500).send("Error 1reading data file");
+//       return;
+//     }
+//     try {
+//       const allData = JSON.parse(data);
+//       const newData = { ...allData, tags: [...allData.tags, newTag] };
+//       fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
+//         if (err) {
+//           console.error("Error writing to file:", err);
+//           return res.status(500).send("Error writing data file");
+//         }
+//         res.status(200).send({ message: "Tag created successfully" });
+//       });
+//     } catch (parseError) {
+//       res.status(500).send("Error parsing JSON data");
+//     }
+//   });
+// });
 
-app.delete("/api/tag/delete/:tagName", (req, res) => {
-  const tagName = req.params.tagName;
-  fs.readFile(dbPath, "utf8", (err, data) => {
-    if (err) {
-      res.status(500).send("Error 1reading data file");
-      return;
-    }
-    try {
-      const allData = JSON.parse(data);
-      const deletedTag = allData.tags.filter(({ tag }) => tag !== tagName);
-      const newData = { ...allData, tags: deletedTag };
+// app.delete("/api/tag/delete/:tagName", (req, res) => {
+//   const tagName = req.params.tagName;
+//   fs.readFile(dbPath, "utf8", (err, data) => {
+//     if (err) {
+//       res.status(500).send("Error 1reading data file");
+//       return;
+//     }
+//     try {
+//       const allData = JSON.parse(data);
+//       const deletedTag = allData.tags.filter(({ tag }) => tag !== tagName);
+//       const newData = { ...allData, tags: deletedTag };
 
-      fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res.status(500).send("Error writing data file");
-        }
-        res.status(200).send({ message: "Tag deleted successfully" });
-      });
-    } catch (parseError) {
-      res.status(500).send("Error parsing JSON data");
-    }
-  });
-});
+//       fs.writeFile(dbPath, JSON.stringify(newData), (err) => {
+//         if (err) {
+//           console.error("Error writing to file:", err);
+//           return res.status(500).send("Error writing data file");
+//         }
+//         res.status(200).send({ message: "Tag deleted successfully" });
+//       });
+//     } catch (parseError) {
+//       res.status(500).send("Error parsing JSON data");
+//     }
+//   });
+// });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

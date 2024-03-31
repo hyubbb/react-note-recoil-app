@@ -1,17 +1,19 @@
-import { useRecoilValue } from "recoil";
 import { MainWrapper } from "../../components";
 import { Container, EmptyMsgBox } from "../../styles/styles";
 import { notesListState } from "../../recoil/atoms/notesListState";
+import { useRecoilValue } from "recoil";
+import useGetTypeNote from "../../hooks/useGetTypeNote";
 
 const TrashNotes = () => {
-  const { trashNotes } = useRecoilValue(notesListState);
+  useGetTypeNote("trash");
+  const notesData = useRecoilValue(notesListState);
   return (
     <>
       <Container>
-        {trashNotes.length === 0 ? (
+        {notesData.length === 0 ? (
           <EmptyMsgBox>노트가 없습니다.</EmptyMsgBox>
         ) : (
-          <MainWrapper notes={trashNotes} type='trash' />
+          <MainWrapper notes={notesData} type='trash' />
         )}
       </Container>
     </>

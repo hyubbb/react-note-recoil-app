@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  padding: 25px 0px 25px 25px;
+  padding: 25px;
 
   @media screen and (max-width: 650px) {
     padding: 20px;
@@ -9,9 +9,12 @@ export const Container = styled.div`
 `;
 
 export const NotesContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 15px;
+  /* display: flex; */
+  /* flex-wrap: wrap; */
+  /* margin-top: 15px; */
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 
   @media screen and (max-width: 650px) {
     justify-content: center;
@@ -25,11 +28,16 @@ export const EmptyMsgBox = styled.div`
 `;
 
 export const ButtonFill = styled.button`
+  display: block;
   padding: 6px 20px;
-  border-radius: 5px;
+  border-radius: 20px;
   cursor: pointer;
   box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.1);
   transition: 250ms background-color ease-in-out;
+  &.nav__btn {
+    position: absolute;
+    right: 20px;
+  }
   span {
     font-weight: 500;
     font-size: clamp(15px, 3.5vw, 1.2rem);
@@ -57,8 +65,7 @@ export const ButtonOutline = styled.button`
 
   span {
     font-weight: 500;
-    font-size: clamp(15px, 3.5vw, 1.2rem);
-    margin-left: 5px;
+    font-size: 20px;
   }
   border: none;
 

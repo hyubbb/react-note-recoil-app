@@ -14,11 +14,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { RecoilEnv } from "recoil";
 import { useRecoilValue } from "recoil";
 import { toggleTagsModalState } from "./recoil/atoms/modalState";
-import useLoadInitData from "./server/hooks/useLoadInitData";
+import "react-quill/dist/quill.snow.css";
+import SidebarMobile from "./layout/Sidebar/SidebarMobile";
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 function App() {
-  useLoadInitData();
-
   const { viewEditTagsModal, viewCreateNoteModal } =
     useRecoilValue(toggleTagsModalState);
   return (
@@ -35,6 +34,7 @@ function App() {
 
         <BrowserRouter>
           <Sidebar />
+          <SidebarMobile />
           <div className='app__container'>
             <Navbar />
             <Routes>

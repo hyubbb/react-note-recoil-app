@@ -1,19 +1,21 @@
 import { AxiosError } from "axios";
-import { Note } from "../../types/note";
-import { setNoteList, updateNote } from "../api";
+import { Note } from "../types/note";
+import { setNoteList, updateNote } from "../server/api";
 import { useSetRecoilState } from "recoil";
-import { setMainNotesSelector } from "../../recoil/atoms/notesListState";
+import {
+  setNoteEditSelector,
+  setNotesSelector,
+} from "../recoil/atoms/notesListState";
 
 const useCreateNote = () => {
-  const setCreateNoteState = useSetRecoilState(setMainNotesSelector);
-  const pathname = window.location.pathname.includes("archive")
-    ? "archiveNotes"
-    : "mainNotes";
+  const setCreateNoteState = useSetRecoilState(setNotesSelector);
+  // const setEditNoteState = useSetRecoilState(setNoteEditSelector);
   const asyncCreateNote = async (note: Note) => {
     try {
       const response = await setNoteList.create(note);
-      setCreateNoteState(note);
-      return response.data;
+      const { noteId } = response;
+      const newData = { ...note, id: noteId } as Note;
+      setCreateNoteState(newData);
     } catch (error) {
       const axiosError = error as AxiosError;
       console.log("Error", axiosError.message);
@@ -22,10 +24,11 @@ const useCreateNote = () => {
   };
 
   const asyncEditNote = async (note: Note) => {
+    console.log("editt");
     try {
-      const response = await updateNote.update({ note, pathname });
+      await updateNote.update(note);
       setCreateNoteState(note);
-      return response.data;
+      // setEditNoteState(note);
     } catch (error) {
       const axiosError = error as AxiosError;
       console.log("Error", axiosError.message);

@@ -4,10 +4,10 @@ import { Tag } from "../types/tag";
 import { NotesList } from "../recoil/atoms/notesListState";
 
 export const getAllNoteList = {
-  getNotes: async () => {
+  getNotes: async (type: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:3100/api/note/allnotes`
+        `http://localhost:3100/api/note/${type}`
       );
       return response.data;
     } catch (error) {
@@ -42,18 +42,27 @@ export const setNoteList = {
   },
 };
 
-interface updateNoteType {
-  note: Note;
-  pathname: string;
-}
-
 export const updateNote = {
-  update: async ({ note, pathname }: updateNoteType) => {
-    console.log(note, pathname);
+  update: async (note: Note) => {
     try {
       const response = await axios.put(
         `http://localhost:3100/api/note/update/${note.id}`,
-        { note, pathname }
+        { note }
+      );
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.log("Error", axiosError.message);
+      throw error;
+    }
+  },
+  move: async (type: string, id: number) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3100/api/note/move/${id}`,
+        {
+          type,
+        }
       );
       return response.data;
     } catch (error) {
@@ -65,8 +74,33 @@ export const updateNote = {
   pin: async (note: Note) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3100/api/note/update/pin/${note.id}`,
+        `http://localhost:3100/api/note/pin/${note.id}`,
         note
+      );
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.log("Error", axiosError.message);
+      throw error;
+    }
+  },
+  priority: async (note: Note) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3100/api/note/priority/${note.id}`,
+        note
+      );
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.log("Error", axiosError.message);
+      throw error;
+    }
+  },
+  delete: async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3100/api/note/delete/${id}`
       );
       return response.data;
     } catch (error) {
@@ -137,6 +171,43 @@ export const getTags = {
       const axiosError = error as AxiosError;
       console.log("Error", axiosError.message);
       throw error;
+    }
+  },
+};
+
+/**
+ *
+ * quill image
+ *
+ */
+
+export const imageToServer = {
+  create: async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const response = await axios.post(
+        "http://localhost:3100/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      const { data } = response;
+      return data.imageUrl;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  },
+  delete: async (imageUrl: string) => {
+    try {
+      axios.post(`http://localhost:3100/deleteImage`, {
+        imageUrl,
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
     }
   },
 };

@@ -4,11 +4,9 @@ export const Card = styled.div`
   border-radius: 16px;
   box-shadow: 0px 1.5px 3px 0px rgba(0, 0, 0, 0.2);
   padding: 20px;
-  margin: 0px 25px 35px 0px;
   background-color: white;
   transition: 250ms box-shadow ease-in-out, 300ms transform ease-out;
-  flex: 1 0 auto;
-  max-width: 400px;
+
   position: relative;
   cursor: pointer;
   ${(props) => (props.color === "#f1f3f5" ? "color: black" : "color: white")};
@@ -19,15 +17,6 @@ export const Card = styled.div`
     .relevantBtn {
       display: block;
     }
-  }
-
-  @media screen and (max-width: 950px) {
-    max-width: 600px;
-  }
-
-  @media screen and (max-width: 650px) {
-    margin: 10px;
-    flex: 1 0 100%;
   }
 `;
 
@@ -65,9 +54,10 @@ export const TopBox = styled.div`
 `;
 
 export const ContentBox = styled.div`
-  width: 150px;
+  width: 100%;
   height: 80px;
-  margin: 15px 0 10px;
+  margin: 10px 0;
+  padding: 0;
   font-size: 14px;
   overflow-y: hidden;
   position: relative;
@@ -76,7 +66,6 @@ export const ContentBox = styled.div`
   img {
     width: auto;
     height: 50px;
-    /* aspect-ratio: 4/3; */
     border-radius: 5px;
   }
 `;
@@ -84,7 +73,6 @@ export const ContentBox = styled.div`
 export const TagsBox = styled.div`
   height: 25px;
   margin-bottom: 15px;
-  /* overflow: scroll; */
   display: flex;
   align-items: center;
   flex-wrap: wrap;

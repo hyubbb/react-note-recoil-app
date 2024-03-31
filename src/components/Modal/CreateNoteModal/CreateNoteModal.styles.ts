@@ -72,18 +72,26 @@ export const OptionsBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 15px 0 25px;
+  margin: 15px 0 0;
 
   select {
     font-size: clamp(14px, 1.5vw, 1rem);
     padding: 5px 10px;
-    user-select: none;
-    outline: none;
-    border: none;
+
     box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.5);
     border-radius: 3px;
+    font-size: 16px;
+    text-align: center;
+    color: #333;
+    border: 1px solid #ccc;
   }
   label {
     font-size: clamp(14px, 1.5vw, 1rem);
+  }
+
+  /* option 태그 스타일링 (모든 브라우저에서 동작하지 않을 수 있음) */
+  option {
+    padding: 10px;
+    background-color: #f2f2f2;
   }
 `;

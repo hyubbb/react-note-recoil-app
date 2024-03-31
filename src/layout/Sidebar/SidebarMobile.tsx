@@ -1,12 +1,17 @@
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Container, ItemsBox, MainBox, StyledLogo } from "./Sibebar.styles";
+import {
+  Container,
+  ItemsBox,
+  MainBox,
+  StyledLogo,
+} from "./SibebarMobile.styles";
 import { GoInbox, GoLightBulb, GoTrash } from "react-icons/go";
 import { CgMenuGridO } from "react-icons/cg";
 import getStandardName from "../../utils/getStandardName";
 import { v4 } from "uuid";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { menuState } from "../../recoil/atoms/menuListState";
+import { menuMobileState } from "../../recoil/atoms/menuListState";
 import { toggleTagsModalSelector } from "../../recoil/atoms/modalState";
 
 const items = [
@@ -14,9 +19,9 @@ const items = [
   { icon: <GoTrash />, title: "Trash", id: v4() },
 ];
 
-const Sidebar = () => {
+const SidebarMobile = () => {
   const { pathname } = useLocation();
-  const [isOpen, setIsOpen] = useRecoilState(menuState);
+  const [isOpen, setIsOpen] = useRecoilState(menuMobileState);
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
   useEffect(() => {
     const handleScroll = () => {
@@ -31,9 +36,8 @@ const Sidebar = () => {
     };
   }, []);
 
-  const Sidebar = () => {
-    const elm = document.querySelector(".mainBox");
-    elm?.classList.toggle("open");
+  const SidebarMobile = () => {
+    setIsOpen((prev) => !prev);
   };
 
   if (pathname === "/404") return null;
@@ -42,12 +46,11 @@ const Sidebar = () => {
     <Container $openMenu={isOpen} className='menu__background'>
       <MainBox $openMenu={isOpen} className='mainBox'>
         <StyledLogo>
-          <div className='title__icon' onClick={() => Sidebar()}>
-            <CgMenuGridO />
-          </div>
-
           <div className='title__menu__name'>
             <h1>Keep</h1>
+          </div>
+          <div className='title__close' onClick={() => SidebarMobile()}>
+            <CgMenuGridO />
           </div>
         </StyledLogo>
 
@@ -98,4 +101,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarMobile;

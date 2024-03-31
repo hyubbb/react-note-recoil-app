@@ -4,7 +4,7 @@ import {
   TagsListType,
   tagsListSelectorFamily,
   tagsListState,
-} from "../../recoil/atoms/tagsListState";
+} from "../recoil/atoms/tagsListState";
 
 const useGetTags = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);

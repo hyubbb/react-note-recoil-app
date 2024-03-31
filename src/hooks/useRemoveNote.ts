@@ -1,8 +1,8 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { notesListState, NotesList } from "../../recoil/atoms/notesListState";
-import { Note } from "../../types/note";
+import { notesListState, NotesList } from "../recoil/atoms/notesListState";
+import { Note } from "../types/note";
 
 export const useMoveToNote = () => {
   const [loading, setLoading] = useState(false);

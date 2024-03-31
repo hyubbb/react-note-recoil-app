@@ -1,20 +1,18 @@
-import { Container, EmptyMsgBox } from "../../styles/styles";
 import { MainWrapper } from "../../components";
-import useGetAllNotes from "../../server/hooks/useGetAllNotes";
+import { Container, EmptyMsgBox } from "../../styles/styles";
+import { useRecoilValue } from "recoil";
+import { notesListState } from "../../recoil/atoms/notesListState";
+import useGetTypeNote from "../../hooks/useGetTypeNote";
 const ArchiveNotes = () => {
-  const { notesData } = useGetAllNotes("archiveNotes");
-  const archiveNotes = notesData.archiveNotes || [];
-
+  useGetTypeNote("archive");
+  const notesData = useRecoilValue(notesListState);
   return (
     <>
       <Container>
-        {archiveNotes.length === 0 ? (
+        {notesData?.length === 0 ? (
           <EmptyMsgBox>노트가 없습니다.</EmptyMsgBox>
         ) : (
-          <>
-            {/* <Box>{getAllNotes(archiveNotes, filter)}</Box> */}
-            <MainWrapper notes={archiveNotes} type='archive' />
-          </>
+          <MainWrapper notes={notesData} type='archive' />
         )}
       </Container>
     </>

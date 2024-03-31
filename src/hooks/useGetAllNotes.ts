@@ -1,20 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValueLoadable } from "recoil";
 import {
-  NotesList,
   notesListSelector,
   notesListState,
-} from "../../recoil/atoms/notesListState";
+} from "../recoil/atoms/notesListState";
 
 const useGetAllNotes = (type: string) => {
+  console.log("useGetAllNotes", type);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
   const [notesData, setNotesData] = useRecoilState(notesListState);
   const [isDataFetched, setIsDataFetched] = useState<boolean>(false);
-
-  const loadable = useRecoilValueLoadable<Omit<NotesList, "editNote">>(
-    notesListSelector(type)
-  );
+  const loadable = useRecoilValueLoadable(notesListSelector(type));
 
   const requestFetchTodos = useCallback((): void => {
     if (loadable === null || loadable === undefined) {
@@ -25,14 +22,10 @@ const useGetAllNotes = (type: string) => {
         setIsLoading(true);
         break;
       case "hasValue":
-        setIsDataFetched(true);
-        setNotesData((prev) => {
-          return {
-            ...prev,
-            ...(loadable.contents as NotesList),
-          };
-        });
-
+        // setIsDataFetched(true);
+        console.log(loadable.contents);
+        setIsLoading(false);
+        setNotesData(loadable.contents);
         break;
       case "hasError":
         setIsError(false);
@@ -44,12 +37,7 @@ const useGetAllNotes = (type: string) => {
   }, [loadable, setNotesData]);
 
   useEffect(() => {
-    if (
-      !isDataFetched &&
-      notesData.mainNotes.length === 0 &&
-      notesData.archiveNotes.length === 0 &&
-      notesData.trashNotes.length === 0
-    ) {
+    if (!isDataFetched) {
       requestFetchTodos();
     }
   }, [loadable, requestFetchTodos, isDataFetched]);

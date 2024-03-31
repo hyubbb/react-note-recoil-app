@@ -30,7 +30,7 @@ export const Container = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
   .nav__page-title {
     font-weight: 600;
@@ -44,7 +44,7 @@ export const Container = styled.div`
     color: black;
   }
 
-  @media screen and (max-width: 430px) {
+  @media screen and (max-width: 650px) {
     .title__icon__mobile {
       position: absolute;
       display: block;
@@ -58,7 +58,7 @@ export const Container = styled.div`
 export const TagList = styled.ul`
   display: flex;
   padding: 20px 10px 0px;
-  overflow: hidden;
+  overflow-y: auto;
   text-wrap: nowrap;
 
   li {
@@ -68,4 +68,12 @@ export const TagList = styled.ul`
     padding: 5px 10px;
     margin: 0 10px;
   }
+
+  /* Chrome, Safari, 최신 Opera 등에서 스크롤바를 숨깁니다. */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none; /* Firefox에서 스크롤바를 숨깁니다. */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
 `;

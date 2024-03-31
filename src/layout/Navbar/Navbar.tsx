@@ -6,17 +6,18 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { toggleTagsModalSelector } from "../../recoil/atoms/modalState";
 import { tagsListState } from "../../recoil/atoms/tagsListState";
 import { CgMenuGridO } from "react-icons/cg";
-import { menuState } from "../../recoil/atoms/menuListState";
+import { menuMobileState } from "../../recoil/atoms/menuListState";
 
 const Navbar = () => {
   const { pathname, state } = useLocation();
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
   const { tagsList } = useRecoilValue(tagsListState);
 
-  const [isOpen, setIsOpen] = useRecoilState(menuState);
+  const [isOpen, setIsOpen] = useRecoilState(menuMobileState);
 
   const isMenu = () => {
-    setIsOpen((prev) => !prev);
+    console.log("first", isOpen);
+    setIsOpen(!isOpen);
   };
 
   if (pathname === "/404") return null;
@@ -26,7 +27,6 @@ const Navbar = () => {
       <StyledNav>
         <Container>
           <>
-            <div></div>
             <div className='title__icon__mobile' onClick={() => isMenu()}>
               <CgMenuGridO />
             </div>
@@ -48,7 +48,7 @@ const Navbar = () => {
           </>
         </Container>
       </StyledNav>
-      {pathname !== "/trash" && (
+      {/* {pathname !== "/trash" && (
         <TagList>
           <li key={"all"}>
             <NavLink
@@ -75,7 +75,7 @@ const Navbar = () => {
             </li>
           ))}
         </TagList>
-      )}
+      )} */}
     </>
   );
 };

@@ -35,10 +35,10 @@ export const ContentBox = styled.div`
   width: 100%;
   min-width: 200px;
   min-height: 100px;
-  margin: 15px 0 10px;
+  margin: 10px 0;
   font-size: 14px;
   overflow-y: hidden;
-
+  padding: 0;
   ${(props) => (props.color === "#f1f3f5" ? "color: black" : "color: #e9ecef")};
 
   img {

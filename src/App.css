@@ -7,12 +7,16 @@
   overflow: auto;
 }
 
+.app__container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
+}
+
 /* 호버할 때 툴팁 */
 [data-info] {
   position: relative;
 }
 
-[data-info]:hover::after {
+[data-info] :hover::after {
   content: attr(data-info);
   position: absolute;
   z-index: 5;

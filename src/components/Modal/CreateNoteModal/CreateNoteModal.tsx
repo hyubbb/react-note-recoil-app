@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { DeleteBox, FixedContainer } from "../Modal.styles";
-import {
-  AddedTagsBox,
-  Box,
-  OptionsBox,
-  StyledInput,
-  TopBox,
-} from "./CreateNoteModal.styles";
-import { ButtonFill, ButtonOutline } from "../../../styles/styles";
+import { Box, OptionsBox, StyledInput, TopBox } from "./CreateNoteModal.styles";
+import { ButtonFill } from "../../../styles/styles";
 import { FaTimes } from "react-icons/fa";
 
 import { TagsModal } from "../..";
@@ -15,34 +9,44 @@ import { v4 } from "uuid";
 
 import dayjs from "dayjs";
 import { Note } from "../../../types/note";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   modalState,
   toggleTagsModalSelector,
 } from "../../../recoil/atoms/modalState";
-import {
-  notesListState,
-  setEditNoteSelector,
-} from "../../../recoil/atoms/notesListState";
+import { editNoteState } from "../../../recoil/atoms/notesListState";
 import { toast } from "react-toastify";
 import TextEditor from "../../TextEditor/TextEditor";
-import useCreateNote from "../../../server/hooks/useCreateNote";
-import Tiptap from "../../TextEditor/Tiptap";
+import useCreateNote from "../../../hooks/useCreateNote";
+import { imageToServer } from "../../../server/api";
+import SelectBox from "../SelectBox/SelectBox";
+
 const CreateNoteModal = () => {
-  const { editNote } = useRecoilValue(notesListState);
+  const [editNote, setEditNote] = useRecoilState(editNoteState);
+
   const { viewAddTagsModal } = useRecoilValue(modalState);
   const { asyncCreateNote, asyncEditNote } = useCreateNote();
 
   const [noteTitle, setNoteTitle] = useState(editNote?.title || "");
   const [value, setValue] = useState(editNote?.content || "");
   const [addedTags, setAddedTags] = useState(editNote?.tags || []);
-  const [noteColor, setNoteColor] = useState(editNote?.color || "#f1f3f5");
+  const [color, setColor] = useState(editNote?.color || "#f1f3f5");
   const [priority, setPriority] = useState(editNote?.priority || "low");
-  const setEditNote = useSetRecoilState(setEditNoteSelector);
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+
   const closeCreateNoteModal = () => {
+    deleteImage(uploadedImages);
     setTagsModalState({ state: "create", value: false });
     setEditNote(null);
+  };
+
+  const deleteImage = (imageUrl: string[]) => {
+    if (imageUrl.length > 0) {
+      imageUrl.forEach((img) => {
+        imageToServer.delete(img);
+      });
+    }
   };
 
   const tagsHandler = (tag: string, type: string) => {
@@ -75,28 +79,25 @@ const CreateNoteModal = () => {
       title: noteTitle,
       content: value,
       tags: addedTags,
-      color: noteColor,
+      color,
       priority,
-      editedTime: new Date().getTime(),
+      editedTime: date,
     };
 
     const isEdit = editNote?.id ? "edit" : "create";
     if (isEdit == "edit") {
-      note = { ...editNote, ...note };
       asyncEditNote(note);
     } else {
       note = {
         ...note,
-        date,
-        createdTime: new Date().getTime(),
-        editedTime: null,
+        type: "main",
+        createdTime: date,
         isPinned: false,
         isRead: false,
-        id: v4(),
+        // id: v4(),
       };
       asyncCreateNote(note);
     }
-
     setTagsModalState({ state: "create", value: false });
     setEditNote(null);
   };
@@ -128,62 +129,32 @@ const CreateNoteModal = () => {
             value={noteTitle}
             onChange={(e) => setNoteTitle(e.target.value)}
           />
-          <TextEditor color={noteColor} value={value} setValue={setValue} />
-
-          {/* <Tiptap /> */}
-
-          <AddedTagsBox>
-            {addedTags.map(({ tag, id }) => (
-              <div key={id}>
-                <span className='createNote__tag'>{tag}</span>
-                <span
-                  className='createNote__tag-remove'
-                  onClick={() => tagsHandler(tag, "remove")}
-                >
-                  <FaTimes />
-                </span>
-              </div>
-            ))}
-          </AddedTagsBox>
+          <TextEditor
+            color={color}
+            value={value}
+            setValue={setValue}
+            uploadedImages={uploadedImages}
+            setUploadedImages={setUploadedImages}
+          />
 
           <OptionsBox>
-            <ButtonOutline
-              onClick={() => setTagsModalState({ state: "add", value: true })}
-            >
-              Add Tag
-            </ButtonOutline>
             <div>
-              <label>배경색 : </label>
-              <select
-                value={noteColor}
-                id='color'
-                onChange={(e) => setNoteColor(e.target.value)}
-              >
-                <option value='#f1f3f5'>white</option>
-                <option value='#ff6b6b'>red</option>
-                <option value='#69db7c'>green</option>
-                <option value='#4dabf7'>blue</option>
-                <option value='#ffd43b'>yellow</option>
-              </select>
+              <SelectBox value={color} setValue={setColor} label={"Color"} />
             </div>
 
             <div>
-              <label>우선순위 : </label>
-              <select
+              <SelectBox
                 value={priority}
-                id='priority'
-                onChange={(e) => setPriority(e.target.value)}
-              >
-                <option value='low'>Low</option>
-                <option value='high'>High</option>
-              </select>
+                setValue={setPriority}
+                label={"Priority"}
+              />
+            </div>
+            <div className='createNote__create-btn'>
+              <ButtonFill onClick={createNoteHandler}>
+                {editNote ? <span>SAVE</span> : <span>CREATE</span>}
+              </ButtonFill>
             </div>
           </OptionsBox>
-          <div className='createNote__create-btn'>
-            <ButtonFill onClick={createNoteHandler}>
-              {editNote ? <span>SAVE</span> : <span>CREATE</span>}
-            </ButtonFill>
-          </div>
         </Box>
       </FixedContainer>
     </>

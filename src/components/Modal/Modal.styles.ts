@@ -12,6 +12,7 @@ export const FixedContainer = styled.div`
   justify-content: center;
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(3px);
+  padding: 30px;
   &.zIndex {
     z-index: 10;
   }

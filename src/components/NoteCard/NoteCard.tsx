@@ -7,15 +7,15 @@ import {
 } from "./NoteCard.styles";
 import { NotesIconBox } from "../../styles/styles";
 import { FaStar } from "react-icons/fa";
-
 import { Note } from "../../types/note";
 import parse from "html-react-parser";
 import ReadNoteModal from "../Modal/ReadNoteModal/ReadNoteModal";
-import { setPinnedSelector } from "../../recoil/atoms/notesListState";
+import { setNotePinSelector } from "../../recoil/atoms/notesListState";
 import { useSetRecoilState } from "recoil";
 import { useState } from "react";
 import usePathNameisTag from "../../utils/usePathNameisTag";
 import GetRelevantBtns from "../../utils/getRelevantBtns";
+import { updateNote } from "../../server/api";
 
 interface NoteCardProps {
   note: Note;
@@ -23,19 +23,22 @@ interface NoteCardProps {
 }
 
 const NoteCard = ({ note, type }: NoteCardProps) => {
-  const { title, content, tags, color, priority, date, isPinned } = note;
+  const { title, content, tags, color, priority, createdTime, isPinned } = note;
+  const createTimeFormat = createdTime?.slice(0, 8);
   const isTag = usePathNameisTag();
-  const setPinned = useSetRecoilState(setPinnedSelector);
+  const setPinned = useSetRecoilState(setNotePinSelector);
+
   const func = () => {
     const chkImg = content.includes("img src=");
     if (chkImg) {
       return content;
     } else {
-      return content.length > 40 ? content.slice(0, 40) + "..." : content;
+      return content.length > 100 ? content.slice(0, 100) + "..." : content;
     }
   };
   const funcPinned = (e: React.MouseEvent) => {
     e.stopPropagation();
+    updateNote.pin(note);
     setPinned(note);
   };
   const [isView, setIsView] = useState(false);
@@ -49,7 +52,7 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
         <ReadNoteModal note={note} type={type} viewHandler={viewHandler} />
       )}
       <Card style={{ background: color }}>
-        <div onClick={() => setIsView(true)}>
+        <div onClick={() => setIsView(true)} className='ql-snow'>
           <TopBox color={color}>
             <div className='noteCard__title'>
               {title.length > 10 ? title.slice(0, 10) + "..." : title}
@@ -66,18 +69,21 @@ const NoteCard = ({ note, type }: NoteCardProps) => {
               )}
             </div>
           </TopBox>
-          <ContentBox color={color}>{parse(func())}</ContentBox>
-          {tags.length > 0 && (
+          <ContentBox color={color} className='ql-editor'>
+            {parse(func())}
+          </ContentBox>
+          {/* </div> */}
+          {/* {tags.length > 0 && (
             <TagsBox>
               {tags.map(({ tag, id }) => (
                 <span key={id}>{tag}</span>
               ))}
             </TagsBox>
-          )}
+          )} */}
         </div>
         <FooterBox>
-          <div className='noteCard__date'>{date}</div>
-          <div className='relevantBtn'>{GetRelevantBtns(type, note)}</div>
+          <div className='noteCard__date'>{createTimeFormat}</div>
+          <div className='relevantBtn'>{GetRelevantBtns(note)}</div>
         </FooterBox>
       </Card>
     </>

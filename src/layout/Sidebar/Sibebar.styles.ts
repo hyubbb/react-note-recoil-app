@@ -66,29 +66,20 @@ export const MainBox = styled.div<{ $openMenu: boolean }>`
     }
   }
 
-  @media screen and (max-width: 430px) {
+  @media screen and (max-width: 650px) {
     position: ${({ $openMenu }) => ($openMenu ? "absolute" : "absolute")};
     display: ${({ $openMenu }) => ($openMenu ? "block" : "none")};
 
-    .title__icon__mobile {
+    /* .title__icon__mobile {
       display: block;
       margin-right: 20px;
       margin-top: 5px;
       font-size: 1.2rem;
-    }
-
-    .title__icon {
-      display: none;
-    }
+    } */
 
     &.open {
       width: 250px;
       transition: 350ms transform ease-in-out;
-
-      .title__icon {
-        display: none;
-        margin-right: 20px;
-      }
 
       .title__menu__name {
         display: block;

@@ -9,9 +9,9 @@ export interface Note {
   isPinned: boolean;
   isRead: boolean;
   date: string;
-  createdTime: number;
-  editedTime: null | number;
-  id: string;
+  createdTime: string;
+  editedTime: string;
+  id: number;
   type: string;
 }
 
@@ -24,8 +24,8 @@ export const singleNote: Note = {
   isPinned: false,
   isRead: false,
   date: "",
-  createdTime: 0,
-  editedTime: null,
-  id: "",
+  createdTime: "",
+  editedTime: "",
+  id: 0,
   type: "",
 };

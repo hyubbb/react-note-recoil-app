@@ -8,13 +8,16 @@ import {
 } from "../../recoil/atoms/modalState";
 import { FiltersModal } from "../../components";
 import getAllNotes from "../../utils/getAllNotes";
+
+import useGetTypeNote from "../../hooks/useGetTypeNote";
 import { notesListState } from "../../recoil/atoms/notesListState";
 
 const AllNotes = () => {
   const [filter, setFilter] = useState("");
   const { viewFiltersModal } = useRecoilValue(modalState);
   const setToggleFiltersModal = useSetRecoilState(toggleTagsModalSelector);
-  const { mainNotes } = useRecoilValue(notesListState);
+  useGetTypeNote("main");
+  const notesData = useRecoilValue(notesListState);
   return (
     <>
       <Container>
@@ -26,7 +29,7 @@ const AllNotes = () => {
           />
         )}
 
-        {mainNotes?.length < 0 ? (
+        {notesData.length == 0 ? (
           <EmptyMsgBox>노트가 없습니다.</EmptyMsgBox>
         ) : (
           <>
@@ -42,7 +45,7 @@ const AllNotes = () => {
                 </ButtonOutline>
               </div>
             </TopBox>
-            <Box>{getAllNotes(mainNotes, filter)}</Box>
+            <Box>{getAllNotes(notesData, filter)}</Box>
           </>
         )}
       </Container>
