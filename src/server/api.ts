@@ -3,11 +3,14 @@ import { Note } from "../types/note";
 import { Tag } from "../types/tag";
 import { NotesList } from "../recoil/atoms/notesListState";
 
+const LOCALHOST = process.env.APP_HOST;
+const PORT = process.env.APP_LOCALPORT || 3100;
+
 export const getAllNoteList = {
   getNotes: async (type: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:3100/api/note/${type}`
+        `http://${LOCALHOST}:${PORT}/api/note/${type}`
       );
       return response.data;
     } catch (error) {
@@ -30,7 +33,7 @@ export const setNoteList = {
   create: async (note: Note) => {
     try {
       const response = await axios.post(
-        `http://localhost:3100/api/note/create`,
+        `http://${LOCALHOST}:${PORT}/api/note/create`,
         note
       );
       return response.data;
@@ -46,7 +49,7 @@ export const updateNote = {
   update: async (note: Note) => {
     try {
       const response = await axios.put(
-        `http://localhost:3100/api/note/update/${note.id}`,
+        `http://${LOCALHOST}:${PORT}/api/note/update/${note.id}`,
         { note }
       );
       return response.data;
@@ -59,7 +62,7 @@ export const updateNote = {
   move: async (type: string, id: number) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3100/api/note/move/${id}`,
+        `http://${LOCALHOST}:${PORT}/api/note/move/${id}`,
         {
           type,
         }
@@ -74,7 +77,7 @@ export const updateNote = {
   pin: async (note: Note) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3100/api/note/pin/${note.id}`,
+        `http://${LOCALHOST}:${PORT}/api/note/pin/${note.id}`,
         note
       );
       return response.data;
@@ -87,7 +90,7 @@ export const updateNote = {
   priority: async (note: Note) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3100/api/note/priority/${note.id}`,
+        `http://${LOCALHOST}:${PORT}/api/note/priority/${note.id}`,
         note
       );
       return response.data;
@@ -100,7 +103,7 @@ export const updateNote = {
   delete: async (id: number) => {
     try {
       const response = await axios.delete(
-        `http://localhost:3100/api/note/delete/${id}`
+        `http://${LOCALHOST}:${PORT}/api/note/delete/${id}`
       );
       return response.data;
     } catch (error) {
@@ -112,7 +115,7 @@ export const updateNote = {
   removeTag: async (note: NotesList) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3100/api/note/remove/tag`,
+        `http://${LOCALHOST}:${PORT}/api/note/remove/tag`,
         note
       );
       return response.data;
@@ -132,7 +135,9 @@ export const updateNote = {
 export const getTags = {
   get: async () => {
     try {
-      const { data } = await axios.get(`http://localhost:3100/api/tag/alltags`);
+      const { data } = await axios.get(
+        `http://${LOCALHOST}:${PORT}/api/tag/alltags`
+      );
       return data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -151,7 +156,7 @@ export const getTags = {
   update: async (tag: Tag) => {
     try {
       const response = await axios.post(
-        `http://localhost:3100/api/tag/update`,
+        `http://${LOCALHOST}:${PORT}/api/tag/update`,
         tag
       );
       return response.data;
@@ -164,7 +169,7 @@ export const getTags = {
   delete: async (tag: Tag) => {
     try {
       const response = await axios.delete(
-        `http://localhost:3100/api/tag/delete/${tag.tag}`
+        `http://${LOCALHOST}:${PORT}/api/tag/delete/${tag.tag}`
       );
       return response.data;
     } catch (error) {
@@ -187,7 +192,7 @@ export const imageToServer = {
     formData.append("image", file);
     try {
       const response = await axios.post(
-        "http://localhost:3100/upload",
+        "http://${LOCALHOST}:${PORT}/upload",
         formData,
         {
           headers: {
@@ -203,7 +208,7 @@ export const imageToServer = {
   },
   delete: async (imageUrl: string) => {
     try {
-      axios.post(`http://localhost:3100/deleteImage`, {
+      axios.post(`http://${LOCALHOST}:${PORT}/deleteImage`, {
         imageUrl,
       });
     } catch (error) {
