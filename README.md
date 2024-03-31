@@ -3,7 +3,7 @@
 <br>
 
 ## 사용된 스택과 라이브러리
-React, Recoil, ExpressJS, TypeScript
+React, Recoil, ExpressJS, TypeScript<br>
 Vite, Styled-Components, React-Quill, React-Select, React-Toastify
 
 
