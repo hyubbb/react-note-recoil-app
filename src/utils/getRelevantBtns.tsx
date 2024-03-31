@@ -58,6 +58,7 @@ const GetRelevantBtns = (note: Note) => {
       moveNote(note);
     } else {
       updateNote.delete(note.id);
+      moveNote(note);
     }
   };
 
