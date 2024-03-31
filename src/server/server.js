@@ -1,9 +1,8 @@
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import path, { dirname } from "path";
+import path from "path";
 import { fileURLToPath } from "url";
-import bodyParser from "body-parser";
 import compression from "compression";
 import multer from "multer";
 import dotenv from "dotenv";
@@ -24,7 +23,7 @@ app.use(express.static(path.join(__dirname, "..", "..", "dist")));
 
 app.use(
   "/uploads",
-  express.static(path.join(__dirname, "..", "..", "uploads"))
+  express.static(path.join(__dirname, "..", "..", "/uploads"))
 );
 const PORT = process.env.APP_LOCALPORT || 3100;
 const LOCALHOST = process.env.APP_HOST;
@@ -169,7 +168,7 @@ app.patch("/api/note/priority/:noteId", (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "upload/");
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
     // 원래 파일의 확장자를 가져와서 저장
@@ -181,7 +180,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post("/upload", upload.single("image"), (req, res) => {
-  const imageUrl = `/upload/${req.file.filename}`;
+  const imageUrl = `/uploads/${req.file.filename}`;
   res.json({ imageUrl });
 });
 

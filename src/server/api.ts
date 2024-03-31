@@ -192,7 +192,7 @@ export const imageToServer = {
     formData.append("image", file);
     try {
       const response = await axios.post(
-        "http://${LOCALHOST}:${PORT}/upload",
+        `http://${LOCALHOST}:${PORT}/upload`,
         formData,
         {
           headers: {
