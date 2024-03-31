@@ -10,7 +10,7 @@ const useGetAllNotes = (type: string) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
   const [notesData, setNotesData] = useRecoilState(notesListState);
-  const [isDataFetched, setIsDataFetched] = useState<boolean>(false);
+  // const [isDataFetched, setIsDataFetched] = useState<boolean>(false);
   const loadable = useRecoilValueLoadable(notesListSelector(type));
 
   const requestFetchTodos = useCallback((): void => {
@@ -23,7 +23,6 @@ const useGetAllNotes = (type: string) => {
         break;
       case "hasValue":
         // setIsDataFetched(true);
-        console.log(loadable.contents);
         setIsLoading(false);
         setNotesData(loadable.contents);
         break;
@@ -37,10 +36,10 @@ const useGetAllNotes = (type: string) => {
   }, [loadable, setNotesData]);
 
   useEffect(() => {
-    if (!isDataFetched) {
-      requestFetchTodos();
-    }
-  }, [loadable, requestFetchTodos, isDataFetched]);
+    // if (!isDataFetched) {
+    requestFetchTodos();
+    // }
+  }, [loadable, requestFetchTodos]);
   return { isLoading, isError, notesData };
 };
 

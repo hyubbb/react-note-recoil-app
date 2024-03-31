@@ -9,9 +9,10 @@ import {
 import { toggleTagsModalSelector } from "../recoil/atoms/modalState";
 import { updateNote } from "../server/api";
 import { useEffect, useState } from "react";
+import usePathNameisTag from "./usePathNameisTag";
 
 const GetRelevantBtns = (note: Note) => {
-  // const isTag = usePathNameisTag();
+  const isTag = usePathNameisTag();
   const toggleNoteModal = useSetRecoilState(toggleTagsModalSelector);
   const setEditNote = useSetRecoilState(editNoteState);
   const moveNote = useSetRecoilState(moveNoteSelector);
@@ -60,13 +61,13 @@ const GetRelevantBtns = (note: Note) => {
     }
   };
 
-  // if (isTag) {
-  //   return (
-  //     <NotesIconBox onClick={clickHandler} data-info={dataInfo["edit"]}>
-  //       <FaEdit style={{ fontSize: "1rem" }} />
-  //     </NotesIconBox>
-  //   );
-  // }
+  if (isTag) {
+    return (
+      <NotesIconBox onClick={clickHandler} data-info={dataInfo["edit"]}>
+        <FaEdit style={{ fontSize: "1rem" }} />
+      </NotesIconBox>
+    );
+  }
 
   return (
     <>

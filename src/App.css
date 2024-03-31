@@ -16,7 +16,7 @@
   position: relative;
 }
 
-[data-info] :hover::after {
+[data-info]:hover::after {
   content: attr(data-info);
   position: absolute;
   z-index: 5;

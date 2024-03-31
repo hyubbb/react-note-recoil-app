@@ -4,16 +4,10 @@ import { Box, OptionsBox, StyledInput, TopBox } from "./CreateNoteModal.styles";
 import { ButtonFill } from "../../../styles/styles";
 import { FaTimes } from "react-icons/fa";
 
-import { TagsModal } from "../..";
-import { v4 } from "uuid";
-
 import dayjs from "dayjs";
 import { Note } from "../../../types/note";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  modalState,
-  toggleTagsModalSelector,
-} from "../../../recoil/atoms/modalState";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { toggleTagsModalSelector } from "../../../recoil/atoms/modalState";
 import { editNoteState } from "../../../recoil/atoms/notesListState";
 import { toast } from "react-toastify";
 import TextEditor from "../../TextEditor/TextEditor";
@@ -24,12 +18,10 @@ import SelectBox from "../SelectBox/SelectBox";
 const CreateNoteModal = () => {
   const [editNote, setEditNote] = useRecoilState(editNoteState);
 
-  const { viewAddTagsModal } = useRecoilValue(modalState);
   const { asyncCreateNote, asyncEditNote } = useCreateNote();
 
   const [noteTitle, setNoteTitle] = useState(editNote?.title || "");
   const [value, setValue] = useState(editNote?.content || "");
-  const [addedTags, setAddedTags] = useState(editNote?.tags || []);
   const [color, setColor] = useState(editNote?.color || "#f1f3f5");
   const [priority, setPriority] = useState(editNote?.priority || "low");
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
@@ -49,20 +41,6 @@ const CreateNoteModal = () => {
     }
   };
 
-  const tagsHandler = (tag: string, type: string) => {
-    const newTag = tag.toLocaleLowerCase();
-
-    if (type === "add") {
-      if (addedTags.length >= 5) {
-        toast.error("태그는 5개까지만 추가 가능합니다.");
-        return;
-      }
-      setAddedTags((prev) => [...prev, { tag: newTag, id: v4() }]);
-    } else {
-      setAddedTags(addedTags.filter(({ tag }) => tag !== newTag));
-    }
-  };
-
   const createNoteHandler = () => {
     if (!noteTitle) {
       toast.error("타이틀을 적어 주세요.");
@@ -78,7 +56,6 @@ const CreateNoteModal = () => {
       ...(editNote as Note),
       title: noteTitle,
       content: value,
-      tags: addedTags,
       color,
       priority,
       editedTime: date,
@@ -94,7 +71,6 @@ const CreateNoteModal = () => {
         createdTime: date,
         isPinned: false,
         isRead: false,
-        // id: v4(),
       };
       asyncCreateNote(note);
     }
@@ -105,13 +81,6 @@ const CreateNoteModal = () => {
   return (
     <>
       <FixedContainer className='zIndex'>
-        {viewAddTagsModal && (
-          <TagsModal
-            type='add'
-            addedTags={addedTags}
-            handleTags={tagsHandler}
-          />
-        )}
         <Box style={{ zIndex: 10 }}>
           <TopBox>
             <div className='createNote_title'>Create Note</div>

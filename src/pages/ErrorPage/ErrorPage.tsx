@@ -1,4 +1,3 @@
-import React from "react";
 import { Container } from "./ErrorPage.styles";
 import img from "../../assets/errorImg.jpg";
 import { ButtonFill } from "../../styles/styles";

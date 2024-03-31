@@ -2,7 +2,7 @@ import { DefaultValue, atom, selectorFamily } from "recoil";
 import { Note } from "../../types/note";
 import { selector } from "recoil";
 import { Tag, tagsState } from "../../types/tag";
-import { getAllNoteList, updateNote } from "../../server/api";
+import { getAllNoteList } from "../../server/api";
 export interface NotesList extends Note {
   note: Note;
   type: string;
@@ -101,39 +101,5 @@ export const moveNoteSelector = selector<Note | undefined>({
     const getNotes = get(notesListState);
     const newNotes = getNotes.filter(({ id }) => id !== noteId);
     set(notesListState, newNotes);
-  },
-});
-
-export const removeTagsSelector = selector({
-  key: "removeTagsSelector",
-  get: ({ get }) => {
-    return get(tagsAtom);
-  },
-  set: ({ get, set }, newValue) => {
-    const { tag } = newValue as Tag;
-    const notesList = get(notesListState);
-    const removeTagFromNotes = (notes: Note[]) => {
-      return notes.map((note) => {
-        return {
-          ...note,
-          tags: note.tags.filter(({ tag: oldTag }) => oldTag !== tag),
-        };
-      });
-    };
-
-    const updateMainNotes = removeTagFromNotes(notesList.mainNotes);
-    const updateArchiveNotes = removeTagFromNotes(notesList.archiveNotes);
-    const updateTrashNotes = removeTagFromNotes(notesList.trashNotes);
-
-    const updateNotes: NotesList = {
-      ...notesList,
-      mainNotes: updateMainNotes,
-      archiveNotes: updateArchiveNotes,
-      trashNotes: updateTrashNotes,
-    };
-
-    updateNote.removeTag(updateNotes);
-
-    set(notesListState, updateNotes);
   },
 });

@@ -1,10 +1,4 @@
-import {
-  Card,
-  ContentBox,
-  FooterBox,
-  TagsBox,
-  TopBox,
-} from "./NoteCard.styles";
+import { Card, ContentBox, FooterBox, TopBox } from "./NoteCard.styles";
 import { NotesIconBox } from "../../styles/styles";
 import { FaStar } from "react-icons/fa";
 import { Note } from "../../types/note";
@@ -23,7 +17,7 @@ interface NoteCardProps {
 }
 
 const NoteCard = ({ note, type }: NoteCardProps) => {
-  const { title, content, tags, color, priority, createdTime, isPinned } = note;
+  const { title, content, color, priority, createdTime, isPinned } = note;
   const createTimeFormat = createdTime?.slice(0, 8);
   const isTag = usePathNameisTag();
   const setPinned = useSetRecoilState(setNotePinSelector);

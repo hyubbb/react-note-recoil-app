@@ -1,14 +1,8 @@
 import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import {
-  AllNotes,
-  ArchiveNotes,
-  ErrorPage,
-  TagNotes,
-  TrashNotes,
-} from "./pages";
+import { AllNotes, ArchiveNotes, ErrorPage, TrashNotes } from "./pages";
 import { Navbar, Sidebar } from "./layout";
-import { CreateNoteModal, TagsModal } from "./components";
+import { CreateNoteModal } from "./components";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RecoilEnv } from "recoil";
@@ -18,13 +12,11 @@ import "react-quill/dist/quill.snow.css";
 import SidebarMobile from "./layout/Sidebar/SidebarMobile";
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 function App() {
-  const { viewEditTagsModal, viewCreateNoteModal } =
-    useRecoilValue(toggleTagsModalState);
+  const { viewCreateNoteModal } = useRecoilValue(toggleTagsModalState);
   return (
     <>
       <div className='app'>
         {viewCreateNoteModal && <CreateNoteModal />}
-        {viewEditTagsModal && <TagsModal type='edit' />}
         <ToastContainer
           position='bottom-right'
           theme='light'
@@ -41,7 +33,6 @@ function App() {
               <Route path='/' element={<AllNotes />} />
               <Route path='/archive' element={<ArchiveNotes />} />
               <Route path='/trash' element={<TrashNotes />} />
-              <Route path='/tag/:name' element={<TagNotes />} />
               <Route path='/404' element={<ErrorPage />} />
               <Route path='/*' element={<Navigate to={"/404"} />} />
             </Routes>

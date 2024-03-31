@@ -20,10 +20,12 @@ const app = express();
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 app.use(compression());
-app.use(express.static(path.join(__dirname, "..", "..", "build")));
+console.log(path.join(__dirname, "..", "..", "dist"));
+app.use(express.static(path.join(__dirname, "..", "..", "dist")));
+
 app.use(
   "/uploads",
-  express.static(path.join(__dirname, "..", "..", "public", "uploads"))
+  express.static(path.join(__dirname, "..", "..", "uploads"))
 );
 const PORT = process.env.APP_LOCALPORT || 3100;
 const LOCALHOST = process.env.APP_HOST;
@@ -49,14 +51,13 @@ app.get("/api/note/:noteType", (req, res) => {
 });
 
 app.post("/api/note/create", (req, res) => {
-  const { title, content, tags, color, priority, createdTime } = req.body;
-  const tagValue = tags.length > 0 ? JSON.stringify(tags) : "[]";
+  const { title, content, color, priority, createdTime } = req.body;
   const query =
-    "INSERT INTO notes (title,content,tags,color,priority,createdTime) VALUES (?,?,?,?,?,?)";
+    "INSERT INTO notes (title,content,color,priority,createdTime) VALUES (?,?,?,?,?)";
 
   connection.query(
     query,
-    [title, content, tagValue, color, priority, createdTime],
+    [title, content, color, priority, createdTime],
     (error, results) => {
       if (error) {
         console.error("Error inserting data:", error);
@@ -73,14 +74,13 @@ app.post("/api/note/create", (req, res) => {
 app.put("/api/note/update/:noteId", (req, res) => {
   const { noteId } = req.params;
   const { note } = req.body;
-  const { title, content, isPinned, priority, color, tags } = note;
-  const tagValue = tags && tags.length > 0 ? JSON.stringify(tags) : "[]";
+  const { title, content, isPinned, priority, color } = note;
 
   const query =
-    "UPDATE notes SET title = ?, content = ?, isPinned= ?, priority= ?, color= ?, tags= ? WHERE id = ?";
+    "UPDATE notes SET title = ?, content = ?, isPinned= ?, priority= ?, color= ? WHERE id = ?";
   connection.query(
     query,
-    [title, content, isPinned, priority, color, tagValue, noteId],
+    [title, content, isPinned, priority, color, noteId],
     (error, results) => {
       if (error) {
         console.error("Error updating note:", error);
@@ -302,6 +302,10 @@ app.post("/deleteImage", (req, res) => {
 //     }
 //   });
 // });
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "..", "dist/index.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

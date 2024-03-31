@@ -4,20 +4,18 @@ import { Container, ItemsBox, MainBox, StyledLogo } from "./Sibebar.styles";
 import { GoInbox, GoLightBulb, GoTrash } from "react-icons/go";
 import { CgMenuGridO } from "react-icons/cg";
 import getStandardName from "../../utils/getStandardName";
-import { v4 } from "uuid";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { menuState } from "../../recoil/atoms/menuListState";
-import { toggleTagsModalSelector } from "../../recoil/atoms/modalState";
 
 const items = [
-  { icon: <GoInbox />, title: "Archive", id: v4() },
-  { icon: <GoTrash />, title: "Trash", id: v4() },
+  { icon: <GoInbox />, title: "Archive", id: 1 },
+  { icon: <GoTrash />, title: "Trash", id: 2 },
 ];
 
 const Sidebar = () => {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useRecoilState(menuState);
-  const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
+  // const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
   useEffect(() => {
     const handleScroll = () => {
       const elm = document.querySelector(".mainBox");

@@ -1,4 +1,3 @@
-import React from "react";
 import Select, { StylesConfig } from "react-select";
 
 interface OptionsProps {

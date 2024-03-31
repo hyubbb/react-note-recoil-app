@@ -182,7 +182,7 @@ export const getTags = {
  */
 
 export const imageToServer = {
-  create: async (file) => {
+  create: async (file: any) => {
     const formData = new FormData();
     formData.append("image", file);
     try {

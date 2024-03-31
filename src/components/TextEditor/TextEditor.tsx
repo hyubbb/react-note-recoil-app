@@ -1,11 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Container } from "./TextEditor.styles";
 
 import ReactQuill, { Quill } from "react-quill";
-import ImageResize from "quill-image-resize";
+import { ImageActions } from "@xeger/quill-image-actions";
+import { ImageFormats } from "@xeger/quill-image-formats";
 
 import { imageToServer } from "../../server/api";
-Quill.register("modules/ImageResize", ImageResize);
+Quill.register("modules/imageActions", ImageActions);
+Quill.register("modules/imageFormats", ImageFormats);
 
 interface textEditorProps {
   value: string;
@@ -73,6 +75,9 @@ const TextEditor = ({
     "image",
     "blockquote",
     "code-block",
+    "float",
+    "height",
+    "width",
   ];
 
   const modules = useMemo(() => {
@@ -91,10 +96,12 @@ const TextEditor = ({
           image: imageHandler,
         },
       },
-      ImageResize: {
-        parchment: Quill.import("parchment"),
-        modules: ["Resize", "DisplaySize"],
-      },
+      imageActions: {},
+      imageFormats: {},
+      // ImageResize: {
+      //   parchment: Quill.import("parchment"),
+      //   modules: ["Resize", "DisplaySize"],
+      // },
     };
   }, []);
 

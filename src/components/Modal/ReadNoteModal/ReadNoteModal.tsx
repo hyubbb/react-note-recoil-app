@@ -2,7 +2,7 @@ import {
   Box,
   ContentBox,
   FooterBox,
-  TagsBox,
+  // TagsBox,
   TopBox,
 } from "./ReadNoteModal.styles";
 import { DeleteBox, FixedContainer } from "../Modal.styles";
@@ -25,8 +25,8 @@ interface ReadNoteModalProps {
 }
 
 const ReadNoteModal = ({ note, type, viewHandler }: ReadNoteModalProps) => {
-  const { priority, isPinned, content, tags, createdTime, color } = note;
-  const createTimeFormat = createdTime.slice(0, 10);
+  const { priority, isPinned, content, createdTime, color } = note;
+  const createTimeFormat = createdTime.slice(0, 8);
   const setPinned = useSetRecoilState(setNotePinSelector);
   const ref = useRef<HTMLDivElement>(null);
 
