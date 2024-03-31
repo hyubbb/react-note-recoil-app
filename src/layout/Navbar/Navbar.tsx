@@ -4,19 +4,16 @@ import { useLocation } from "react-router-dom";
 import getStandardName from "../../utils/getStandardName";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { toggleTagsModalSelector } from "../../recoil/atoms/modalState";
-// import { tagsListState } from "../../recoil/atoms/tagsListState";
 import { CgMenuGridO } from "react-icons/cg";
 import { menuMobileState } from "../../recoil/atoms/menuListState";
 
 const Navbar = () => {
   const { pathname, state } = useLocation();
   const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
-  // const { tagsList } = useRecoilValue(tagsListState);
 
   const [isOpen, setIsOpen] = useRecoilState(menuMobileState);
 
   const isMenu = () => {
-    console.log("first", isOpen);
     setIsOpen(!isOpen);
   };
 

@@ -7,7 +7,7 @@ import {
   StyledLogo,
 } from "./SibebarMobile.styles";
 import { GoInbox, GoLightBulb, GoTrash } from "react-icons/go";
-import { CgMenuGridO } from "react-icons/cg";
+import { CgClose, CgMenuGridO } from "react-icons/cg";
 import getStandardName from "../../utils/getStandardName";
 import { useRecoilState } from "recoil";
 import { menuMobileState } from "../../recoil/atoms/menuListState";
@@ -47,7 +47,7 @@ const SidebarMobile = () => {
             <h1>Keep</h1>
           </div>
           <div className='title__close' onClick={() => SidebarMobile()}>
-            <CgMenuGridO />
+            <CgClose />
           </div>
         </StyledLogo>
 
