@@ -7,9 +7,6 @@ export const Container = styled.nav<{ $openMenu: boolean }>`
     z-index: 2;
     top: 0;
     left: 0;
-    /* height: 100vh; */
-
-    cursor: pointer;
   }
 `;
 
@@ -24,48 +21,6 @@ export const MainBox = styled.div<{ $openMenu: boolean }>`
 
   .menu__name {
     display: block;
-  }
-
-  /* &.open {
-    width: 250px;
-    transition: 350ms transform ease-in-out;
-  } */
-
-  @media screen and (max-width: 950px) {
-    /* width: 75px;
-    .title__menu__name {
-      display: none;
-    }
-    .title__close {
-      display: block;
-    }
-    .menu__name {
-      display: none;
-    } */
-  }
-
-  @media screen and (max-width: 650px) {
-    /* position: ${({ $openMenu }) => ($openMenu ? "absolute" : "absolute")};
-    display: ${({ $openMenu }) => ($openMenu ? "block" : "none")}; */
-
-    /* .title__close__mobile {
-      display: block;
-      margin-right: 20px;
-      margin-top: 5px;
-      font-size: 1.2rem;
-    } */
-
-    /* &.open {
-      width: 250px;
-      transition: 350ms transform ease-in-out;
-
-      .title__menu__name {
-        display: block;
-      }
-      .menu__name {
-        display: block;
-      }
-    } */
   }
 `;
 
@@ -84,6 +39,16 @@ export const StyledLogo = styled.div`
   span {
     font-size: 1.25rem;
     font-weight: 700;
+  }
+
+  .title__close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    cursor: pointer;
   }
 
   @media screen and (max-width: 950px) {

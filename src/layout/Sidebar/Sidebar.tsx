@@ -15,7 +15,6 @@ const items = [
 const Sidebar = () => {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useRecoilState(menuState);
-  // const setTagsModalState = useSetRecoilState(toggleTagsModalSelector);
   useEffect(() => {
     const handleScroll = () => {
       const elm = document.querySelector(".mainBox");
@@ -80,16 +79,6 @@ const Sidebar = () => {
               </NavLink>
             </li>
           ))}
-
-          {/* <li
-            className='sidebar__edit-item'
-            onClick={() => setTagsModalState({ state: "edit", value: true })}
-          >
-            <span>
-              <GoTag />
-            </span>
-            <span className='menu__name'>Edit Tags</span>
-          </li> */}
         </ItemsBox>
       </MainBox>
     </Container>

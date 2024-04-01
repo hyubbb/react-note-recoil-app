@@ -82,16 +82,6 @@ const SidebarMobile = () => {
               </NavLink>
             </li>
           ))}
-
-          {/* <li
-            className='sidebar__edit-item'
-            onClick={() => setTagsModalState({ state: "edit", value: true })}
-          >
-            <span>
-              <GoTag />
-            </span>
-            <span className='menu__name'>Edit Tags</span>
-          </li> */}
         </ItemsBox>
       </MainBox>
     </Container>
