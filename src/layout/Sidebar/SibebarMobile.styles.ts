@@ -45,7 +45,6 @@ export const StyledLogo = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
     font-size: 1.5rem;
     line-height: 1.5rem;
     cursor: pointer;
