@@ -2,8 +2,7 @@
 
 # NOTE APP - 현재 aws서버 복구중
 
-
-![noteapp-ezgif com-video-to-gif-converter](https://github.com/hyubbb/react-note-recoil-app/assets/32926006/85a57e25-4d8c-4371-9245-9b3fafb5c543)
+ ![noteapp-ezgif com-speed](https://github.com/hyubbb/react-note-recoil-app/assets/32926006/6539fe22-a68d-4a10-9b3a-6a308c42fbf8)
 
 
 <br>
