@@ -1,6 +1,10 @@
 ---
 
-# 현재 aws서버 복구중
+# NOTE APP - 현재 aws서버 복구중
+
+
+![noteapp-ezgif com-video-to-gif-converter](https://github.com/hyubbb/react-note-recoil-app/assets/32926006/85a57e25-4d8c-4371-9245-9b3fafb5c543)
+
 
 <br>
 
@@ -28,3 +32,4 @@ Vite, Styled-Components, React-Quill, React-Select, React-Toastify
  - `Styled-Components`를 사용한 반응형 디자인 구현, 모바일 환경 최적화.
  - 필터 기능을 통한 노트 데이터의 우선순위 및 날짜별 정렬 가능.
  - 노트 작성, 삭제, 수정, 아카이빙 기능.
+
