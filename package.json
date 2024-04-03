@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prod": "NODE_ENV=production node src/server/server.js",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -26,6 +27,7 @@
     "express-mysql-session": "^3.0.0",
     "express-session": "^1.17.3",
     "html-react-parser": "^5.0.6",
+    "mariadb": "^3.3.0",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "quill-image-resize": "^3.0.9",

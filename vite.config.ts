@@ -5,6 +5,11 @@ const isDevelopment = process.env.NODE_ENV === "development";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      "/api": "http://localhost:3100",
+    },
+  },
   build: {
     rollupOptions: {
       output: {
