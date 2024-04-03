@@ -1,5 +1,10 @@
 ---
 
+# NOTE APP - 현재 aws서버 복구중
+
+ ![noteapp-ezgif com-speed](https://github.com/hyubbb/react-note-recoil-app/assets/32926006/6539fe22-a68d-4a10-9b3a-6a308c42fbf8)
+
+
 <br>
 
 ## 사용된 스택과 라이브러리
@@ -26,3 +31,4 @@ Vite, Styled-Components, React-Quill, React-Select, React-Toastify
  - `Styled-Components`를 사용한 반응형 디자인 구현, 모바일 환경 최적화.
  - 필터 기능을 통한 노트 데이터의 우선순위 및 날짜별 정렬 가능.
  - 노트 작성, 삭제, 수정, 아카이빙 기능.
+
