@@ -90,7 +90,8 @@ const TextEditor = ({
           [],
           [{ color: [] }, { background: [] }],
           [],
-          ["image", "blockquote", "code-block"],
+          ["blockquote", "code-block"],
+          // ["image", "blockquote", "code-block"],
         ],
         handlers: {
           image: imageHandler,
