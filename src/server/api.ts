@@ -3,15 +3,10 @@ import { Note } from "../types/note";
 import { Tag } from "../types/tag";
 import { NotesList } from "../recoil/atoms/notesListState";
 
-const LOCALHOST = import.meta.env.VITE_APP_HOST;
-const PORT = import.meta.env.VITE_APP_LOCALPORT || 3100;
-
 export const getAllNoteList = {
   getNotes: async (type: string) => {
     try {
-      const response = await axios.get(
-        `http://${LOCALHOST}:${PORT}/api/note/${type}`
-      );
+      const response = await axios.get(`/api/note/${type}`);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -32,10 +27,7 @@ export const getAllNoteList = {
 export const setNoteList = {
   create: async (note: Note) => {
     try {
-      const response = await axios.post(
-        `http://${LOCALHOST}:${PORT}/api/note/create`,
-        note
-      );
+      const response = await axios.post(`/api/note/create`, note);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -48,10 +40,7 @@ export const setNoteList = {
 export const updateNote = {
   update: async (note: Note) => {
     try {
-      const response = await axios.put(
-        `http://${LOCALHOST}:${PORT}/api/note/update/${note.id}`,
-        { note }
-      );
+      const response = await axios.put(`/api/note/update/${note.id}`, { note });
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -61,12 +50,9 @@ export const updateNote = {
   },
   move: async (type: string, id: number) => {
     try {
-      const response = await axios.patch(
-        `http://${LOCALHOST}:${PORT}/api/note/move/${id}`,
-        {
-          type,
-        }
-      );
+      const response = await axios.patch(`/api/note/move/${id}`, {
+        type,
+      });
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -76,10 +62,7 @@ export const updateNote = {
   },
   pin: async (note: Note) => {
     try {
-      const response = await axios.patch(
-        `http://${LOCALHOST}:${PORT}/api/note/pin/${note.id}`,
-        note
-      );
+      const response = await axios.patch(`/api/note/pin/${note.id}`, note);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -89,10 +72,7 @@ export const updateNote = {
   },
   priority: async (note: Note) => {
     try {
-      const response = await axios.patch(
-        `http://${LOCALHOST}:${PORT}/api/note/priority/${note.id}`,
-        note
-      );
+      const response = await axios.patch(`/api/note/priority/${note.id}`, note);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -102,9 +82,7 @@ export const updateNote = {
   },
   delete: async (id: number) => {
     try {
-      const response = await axios.delete(
-        `http://${LOCALHOST}:${PORT}/api/note/delete/${id}`
-      );
+      const response = await axios.delete(`/api/note/delete/${id}`);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -114,10 +92,7 @@ export const updateNote = {
   },
   removeTag: async (note: NotesList) => {
     try {
-      const response = await axios.patch(
-        `http://${LOCALHOST}:${PORT}/api/note/remove/tag`,
-        note
-      );
+      const response = await axios.patch(`/api/note/remove/tag`, note);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -135,9 +110,7 @@ export const updateNote = {
 export const getTags = {
   get: async () => {
     try {
-      const { data } = await axios.get(
-        `http://${LOCALHOST}:${PORT}/api/tag/alltags`
-      );
+      const { data } = await axios.get(`/api/tag/alltags`);
       return data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -155,10 +128,7 @@ export const getTags = {
   },
   update: async (tag: Tag) => {
     try {
-      const response = await axios.post(
-        `http://${LOCALHOST}:${PORT}/api/tag/update`,
-        tag
-      );
+      const response = await axios.post(`/api/tag/update`, tag);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -168,9 +138,7 @@ export const getTags = {
   },
   delete: async (tag: Tag) => {
     try {
-      const response = await axios.delete(
-        `http://${LOCALHOST}:${PORT}/api/tag/delete/${tag.tag}`
-      );
+      const response = await axios.delete(`/api/tag/delete/${tag.tag}`);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -191,15 +159,11 @@ export const imageToServer = {
     const formData = new FormData();
     formData.append("image", file);
     try {
-      const response = await axios.post(
-        `http://${LOCALHOST}:${PORT}/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       const { data } = response;
       return data.imageUrl;
     } catch (error) {
@@ -208,7 +172,7 @@ export const imageToServer = {
   },
   delete: async (imageUrl: string) => {
     try {
-      axios.post(`http://${LOCALHOST}:${PORT}/deleteImage`, {
+      axios.post(`/deleteImage`, {
         imageUrl,
       });
     } catch (error) {
