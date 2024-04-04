@@ -2,6 +2,8 @@
 
 # NOTE APP - 현재 aws서버 복구중
 
+https://port-0-note-app-754g42alujclxiq.sel5.cloudtype.app/
+
  ![noteapp-ezgif com-speed](https://github.com/hyubbb/react-note-recoil-app/assets/32926006/6539fe22-a68d-4a10-9b3a-6a308c42fbf8)
 
 
