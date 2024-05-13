@@ -13,12 +13,16 @@ export const FixedContainer = styled.div`
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(3px);
   padding: 30px;
+
   &.zIndex {
     z-index: 10;
   }
 
   &.tagModal {
     z-index: 11;
+  }
+  @media screen and (max-width: 768px) {
+    padding: 0;
   }
 `;
 
