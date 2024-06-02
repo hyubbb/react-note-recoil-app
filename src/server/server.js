@@ -52,7 +52,7 @@ async function startServer() {
       conn = await pool.getConnection();
       const type = req.params.noteType;
       const results = await conn.query(
-        "SELECT * FROM note.notes WHERE type = ?",
+        "SELECT * FROM notedb.notes WHERE type = ?",
         [type]
       );
       res.json(results);
